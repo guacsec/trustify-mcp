@@ -1,6 +1,6 @@
 # mcp
 
-This project provides an implementation of on MCP (Model Context Protocol) server relying upon the official MCP rust-sdk and heavily inspired but the examples that project provides.
+This project provides an implementation of on MCP (Model Context Protocol) server relying upon the [official MCP rust-sdk](https://github.com/modelcontextprotocol/rust-sdk) and heavily inspired but the examples that project provides.
 Both the Stdio and SSE transports are supported.
 
 ## Env variables
