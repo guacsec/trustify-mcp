@@ -26,6 +26,6 @@ tracing-subscriber = { version = "0.3", features = [
     "std",
     "fmt",
 ] }
-trustify-module-fundamental = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0-rc.2", package = "trustify-module-fundamental"}
-trustify-auth = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0-rc.2", package = "trustify-auth"}
+trustify-module-fundamental = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0", package = "trustify-module-fundamental"}
+trustify-auth = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0", package = "trustify-auth"}
 urlencoding = "2.1"
