@@ -1776,14 +1776,13 @@ dependencies = [
 
 [[package]]
 name = "cve"
-version = "0.3.2"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6589e09d072d12278e8c143abc41535833cdf76e45647dbae62254b454b4f308"
+checksum = "bba109f3a468c9e2cd871c259040cf11ca95caaaed10427c6c8879515ae87896"
 dependencies = [
  "serde",
  "serde_json",
  "time",
- "url",
  "uuid",
 ]
 
@@ -7120,8 +7119,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-auth"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7156,8 +7155,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-common"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -7205,8 +7204,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-cvss"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "serde",
  "utoipa",
@@ -7214,8 +7213,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-entity"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "cpe",
  "deepsize",
@@ -7233,8 +7232,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-migration"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "sea-orm-migration",
  "serde_json",
@@ -7245,8 +7244,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-analysis"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7268,6 +7267,7 @@ dependencies = [
  "serde_json",
  "spdx-rs",
  "thiserror 2.0.12",
+ "time",
  "tokio",
  "tracing",
  "trustify-auth",
@@ -7280,8 +7280,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-fundamental"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7303,6 +7303,7 @@ dependencies = [
  "serde",
  "serde_json",
  "spdx",
+ "spdx-expression",
  "strum 0.27.1",
  "tar",
  "thiserror 2.0.12",
@@ -7324,8 +7325,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-ingestor"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -7374,8 +7375,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-storage"
-version = "0.3.0-rc.2"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0-rc.2#89a0c3eb3a452a9dfd2ab8c44753f9fc92a24bfd"
+version = "0.3.0"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "anyhow",
  "async-compression",
