@@ -5,6 +5,9 @@ use trustify_test_context::subset::ContainsSubset;
 #[test]
 fn tools_list() {
     let output = Command::new("sh").arg("-c").arg("npx @modelcontextprotocol/inspector --cli --config ./tests/mcp-inspector-tests-config.json --server trustify-stdio --method tools/list")
+        // set timeouts (in milliseconds) in order to allow the `cargo run` from mcp-inspector-tests-config.json to run successfully
+        .env("MCP_SERVER_REQUEST_TIMEOUT", "120000")
+        .env("MCP_REQUEST_MAX_TOTAL_TIMEOUT", "120000")
         .output()
         .expect("failed to execute process");
 

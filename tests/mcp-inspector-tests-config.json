@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "trustify-stdio": {
-      "command": "./target/release/stdio",
-      "args": [],
+      "command": "cargo",
+      "args": ["run", "-rq", "--bin", "stdio"],
       "env": {
         "API_URL": "",
         "OPENID_ISSUER_URL": "",
