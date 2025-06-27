@@ -35,4 +35,4 @@ jobs:
       - name: Check
         run: cargo check
       - name: Test
-        run: cargo test -r
+        run: cargo test
