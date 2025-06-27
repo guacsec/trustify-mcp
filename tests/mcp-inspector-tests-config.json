@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "trustify-stdio": {
+      "command": "./target/release/stdio",
+      "args": [],
+      "env": {
+        "API_URL": "",
+        "OPENID_ISSUER_URL": "",
+        "OPENID_CLIENT_ID": "",
+        "OPENID_CLIENT_SECRET": ""
+      }
+    }
+  }
+}

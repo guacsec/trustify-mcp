@@ -3719,8 +3719,9 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
- "trustify-auth",
+ "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
  "trustify-module-fundamental",
+ "trustify-test-context",
  "urlencoding",
 ]
 
@@ -4218,6 +4219,12 @@ dependencies = [
  "digest",
  "hmac",
 ]
+
+[[package]]
+name = "peak_alloc"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29c4e8e2dd832fd76346468f822e4e600d30ba4e5aa545a128abf12cfae7ea3e"
 
 [[package]]
 name = "pem"
@@ -6737,6 +6744,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-context"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb69cce03e432993e2dc1f93f7899b952300fcb6dc44191a1b830b60b8c3c8aa"
+dependencies = [
+ "futures",
+ "test-context-macros",
+]
+
+[[package]]
+name = "test-context-macros"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97e0639209021e54dbe19cafabfc0b5574b078c37358945e6d473eabe39bb974"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
+
+[[package]]
 name = "text-splitter"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7077,6 +7105,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-flame"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bae117ee14789185e129aaee5d93750abe67fdc5a9a62650452bfe4e122a3a9"
+dependencies = [
+ "lazy_static",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "tracing-futures"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7147,7 +7186,43 @@ dependencies = [
  "thiserror 2.0.12",
  "tokio",
  "tracing",
- "trustify-common",
+ "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "url",
+ "utoipa",
+ "utoipa-swagger-ui",
+]
+
+[[package]]
+name = "trustify-auth"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "actix-http",
+ "actix-web",
+ "actix-web-extras",
+ "actix-web-httpauth",
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "biscuit",
+ "chrono",
+ "clap",
+ "futures-util",
+ "humantime",
+ "jsonpath-rust",
+ "log",
+ "openid",
+ "reqwest 0.12.19",
+ "schemars 0.9.0",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "serde_yaml_ng",
+ "strum 0.27.1",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
+ "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
  "url",
  "utoipa",
  "utoipa-swagger-ui",
@@ -7195,7 +7270,56 @@ dependencies = [
  "time",
  "tokio",
  "tracing",
- "trustify-migration",
+ "trustify-migration 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "urlencoding",
+ "utoipa",
+ "uuid",
+ "walker-common",
+]
+
+[[package]]
+name = "trustify-common"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "actix-web",
+ "anyhow",
+ "bytes",
+ "bytesize",
+ "chrono",
+ "clap",
+ "cpe",
+ "deepsize",
+ "hex",
+ "hide",
+ "human-date-parser",
+ "humantime",
+ "itertools 0.14.0",
+ "lenient_semver",
+ "log",
+ "native-tls",
+ "packageurl",
+ "pem",
+ "percent-encoding",
+ "postgresql_embedded",
+ "regex",
+ "reqwest 0.12.19",
+ "ring",
+ "sbom-walker",
+ "schemars 0.9.0",
+ "sea-orm",
+ "sea-query",
+ "serde",
+ "serde_json",
+ "spdx-expression",
+ "spdx-rs",
+ "sqlx",
+ "strum 0.27.1",
+ "thiserror 2.0.12",
+ "time",
+ "tokio",
+ "tracing",
+ "trustify-migration 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
  "urlencoding",
  "utoipa",
  "uuid",
@@ -7206,6 +7330,15 @@ dependencies = [
 name = "trustify-cvss"
 version = "0.3.0"
 source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
+dependencies = [
+ "serde",
+ "utoipa",
+]
+
+[[package]]
+name = "trustify-cvss"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
 dependencies = [
  "serde",
  "utoipa",
@@ -7225,8 +7358,27 @@ dependencies = [
  "strum 0.27.1",
  "thiserror 2.0.12",
  "time",
- "trustify-common",
- "trustify-cvss",
+ "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "utoipa",
+]
+
+[[package]]
+name = "trustify-entity"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "cpe",
+ "deepsize",
+ "schemars 0.9.0",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "strum 0.27.1",
+ "thiserror 2.0.12",
+ "time",
+ "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-cvss 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
  "utoipa",
 ]
 
@@ -7238,7 +7390,19 @@ dependencies = [
  "sea-orm-migration",
  "serde_json",
  "tokio",
- "trustify-cvss",
+ "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "uuid",
+]
+
+[[package]]
+name = "trustify-migration"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "sea-orm-migration",
+ "serde_json",
+ "tokio",
+ "trustify-cvss 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
  "uuid",
 ]
 
@@ -7270,9 +7434,45 @@ dependencies = [
  "time",
  "tokio",
  "tracing",
- "trustify-auth",
- "trustify-common",
- "trustify-entity",
+ "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-entity 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "utoipa",
+ "utoipa-actix-web",
+ "uuid",
+]
+
+[[package]]
+name = "trustify-module-analysis"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "actix-http",
+ "actix-web",
+ "anyhow",
+ "bytesize",
+ "clap",
+ "cpe",
+ "deepsize",
+ "fixedbitset 0.5.7",
+ "futures",
+ "log",
+ "moka",
+ "opentelemetry",
+ "parking_lot 0.12.4",
+ "petgraph 0.8.2",
+ "sea-orm",
+ "sea-query",
+ "serde",
+ "serde_json",
+ "spdx-rs",
+ "thiserror 2.0.12",
+ "time",
+ "tokio",
+ "tracing",
+ "trustify-auth 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-entity 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
  "utoipa",
  "utoipa-actix-web",
  "uuid",
@@ -7311,13 +7511,13 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-futures",
- "trustify-auth",
- "trustify-common",
- "trustify-cvss",
- "trustify-entity",
- "trustify-module-analysis",
- "trustify-module-ingestor",
- "trustify-module-storage",
+ "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-entity 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-module-analysis 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-module-ingestor 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-module-storage 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
  "utoipa",
  "utoipa-actix-web",
  "uuid",
@@ -7361,12 +7561,62 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
- "trustify-auth",
- "trustify-common",
- "trustify-cvss",
- "trustify-entity",
- "trustify-module-analysis",
- "trustify-module-storage",
+ "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-entity 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-module-analysis 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-module-storage 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "utoipa",
+ "utoipa-actix-web",
+ "uuid",
+ "zip 4.0.0",
+]
+
+[[package]]
+name = "trustify-module-ingestor"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "actix-web",
+ "anyhow",
+ "bytes",
+ "cpe",
+ "csaf",
+ "cve",
+ "hex",
+ "humantime",
+ "jsn",
+ "jsonpath-rust",
+ "lenient_semver",
+ "log",
+ "osv",
+ "packageurl",
+ "parking_lot 0.12.4",
+ "quick-xml",
+ "roxmltree",
+ "sbom-walker",
+ "sea-orm",
+ "sea-query",
+ "semver",
+ "serde",
+ "serde-cyclonedx",
+ "serde_json",
+ "serde_yaml_ng",
+ "spdx-expression",
+ "spdx-rs",
+ "strum 0.27.1",
+ "thiserror 2.0.12",
+ "time",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "trustify-auth 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-cvss 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-entity 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-module-analysis 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-module-storage 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
  "utoipa",
  "utoipa-actix-web",
  "uuid",
@@ -7395,9 +7645,68 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
- "trustify-common",
+ "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
  "urlencoding",
  "uuid",
+]
+
+[[package]]
+name = "trustify-module-storage"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "anyhow",
+ "async-compression",
+ "aws-config",
+ "aws-sdk-s3",
+ "aws-smithy-http-client",
+ "aws-smithy-types",
+ "bytes",
+ "clap",
+ "futures",
+ "hex",
+ "log",
+ "strum 0.27.1",
+ "tempfile",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "urlencoding",
+ "uuid",
+]
+
+[[package]]
+name = "trustify-test-context"
+version = "0.3.0"
+source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+dependencies = [
+ "actix-http",
+ "actix-web",
+ "anyhow",
+ "bytes",
+ "futures",
+ "liblzma",
+ "log",
+ "peak_alloc",
+ "postgresql_embedded",
+ "serde",
+ "serde_json",
+ "spdx-rs",
+ "test-context",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-flame",
+ "tracing-subscriber",
+ "trustify-auth 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-entity 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-migration 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-module-ingestor 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-module-storage 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "utoipa-actix-web",
 ]
 
 [[package]]
