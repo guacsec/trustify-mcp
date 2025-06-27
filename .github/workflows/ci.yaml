@@ -34,5 +34,5 @@ jobs:
         run: cargo fmt --check
       - name: Check
         run: cargo check
-      - name: Build
-        run: cargo build -r
+      - name: Test
+        run: cargo test -r

@@ -26,6 +26,10 @@ tracing-subscriber = { version = "0.3", features = [
     "std",
     "fmt",
 ] }
-trustify-module-fundamental = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0", package = "trustify-module-fundamental"}
-trustify-auth = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0", package = "trustify-auth"}
+trustify-auth = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0"}
+trustify-module-fundamental = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0"}
 urlencoding = "2.1"
+
+[dev-dependencies]
+#trustify-test-context = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0"}
+trustify-test-context = { git = "https://github.com/mrizzi/trustify.git", branch = "chore-env-not-defined"}
