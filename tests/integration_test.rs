@@ -1,18 +1,30 @@
+use anyhow::Error;
+use rmcp::{ServiceExt, transport::TokioChildProcess};
 use serde_json::json;
-use std::process::Command;
+use std::{env, process::Command};
 use trustify_test_context::subset::ContainsSubset;
 
 #[test]
-fn tools_list() {
-    let output = Command::new("sh").arg("-c").arg("npx @modelcontextprotocol/inspector --cli --config ./tests/mcp-inspector-tests-config.json --server trustify-stdio --method tools/list")
-        // set timeouts (in milliseconds) in order to allow the `cargo run` from mcp-inspector-tests-config.json to run successfully
-        .env("MCP_SERVER_REQUEST_TIMEOUT", "120000")
-        .env("MCP_REQUEST_MAX_TOTAL_TIMEOUT", "120000")
+fn tools_list_mcp_inspector() {
+    let inspector_commmand = format!(
+        "npx @modelcontextprotocol/inspector --cli {} --method tools/list",
+        env!("CARGO_BIN_EXE_stdio")
+    );
+    log::debug!("inspector command: {}", inspector_commmand);
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(inspector_commmand)
+        .env("API_URL", "")
+        .env("OPENID_ISSUER_URL", "")
+        .env("OPENID_CLIENT_ID", "")
+        .env("OPENID_CLIENT_SECRET", "")
         .output()
         .expect("failed to execute process");
 
     let result = serde_json::from_str(str::from_utf8(&output.stdout).unwrap_or_default())
         .unwrap_or_default();
+    log::debug!("{:#?}", result);
+    log::debug!("{:#?}", str::from_utf8(&output.stderr).unwrap_or_default());
     let expected_result = json!({
       "tools": [
         {
@@ -250,4 +262,28 @@ fn tools_list() {
       ]
     });
     assert!(expected_result.contains_subset(result));
+}
+
+#[tokio::test]
+async fn tools_list_mcp_client() -> Result<(), Error> {
+    let mut command = tokio::process::Command::new(env!("CARGO_BIN_EXE_stdio"));
+    command
+        .env("API_URL", "")
+        .env("OPENID_ISSUER_URL", "")
+        .env("OPENID_CLIENT_ID", "")
+        .env("OPENID_CLIENT_SECRET", "");
+    // Start server
+    let service = ().serve(TokioChildProcess::new(&mut command)?).await?;
+
+    // Initialize
+    let server_info = service.peer_info();
+    log::debug!("Connected to server: {server_info:#?}");
+    assert_eq!(server_info.server_info.name, "mcp-stdio");
+
+    // List tools
+    let tools = service.list_all_tools().await?;
+    log::debug!("Available tools: {tools:#?}");
+    assert_eq!(tools.len(), 10);
+
+    Ok(())
 }
