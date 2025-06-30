@@ -3711,6 +3711,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "log",
  "openid",
  "reqwest 0.12.19",
  "rmcp",
