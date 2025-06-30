@@ -33,5 +33,4 @@ urlencoding = "2.1"
 [dev-dependencies]
 log = "0.4"
 rmcp = { version = "0.1.5", features = ["client", "transport-child-process"] }
-#trustify-test-context = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0"}
-trustify-test-context = { git = "https://github.com/mrizzi/trustify.git", branch = "chore-env-not-defined"}
+trustify-test-context = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.0"}
