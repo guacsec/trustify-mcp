@@ -3720,7 +3720,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
- "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-auth",
  "trustify-module-fundamental",
  "trustify-test-context",
  "urlencoding",
@@ -7187,43 +7187,7 @@ dependencies = [
  "thiserror 2.0.12",
  "tokio",
  "tracing",
- "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "url",
- "utoipa",
- "utoipa-swagger-ui",
-]
-
-[[package]]
-name = "trustify-auth"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "actix-http",
- "actix-web",
- "actix-web-extras",
- "actix-web-httpauth",
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "biscuit",
- "chrono",
- "clap",
- "futures-util",
- "humantime",
- "jsonpath-rust",
- "log",
- "openid",
- "reqwest 0.12.19",
- "schemars 0.9.0",
- "serde",
- "serde_json",
- "serde_with",
- "serde_yaml_ng",
- "strum 0.27.1",
- "thiserror 2.0.12",
- "tokio",
- "tracing",
- "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-common",
  "url",
  "utoipa",
  "utoipa-swagger-ui",
@@ -7271,56 +7235,7 @@ dependencies = [
  "time",
  "tokio",
  "tracing",
- "trustify-migration 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "urlencoding",
- "utoipa",
- "uuid",
- "walker-common",
-]
-
-[[package]]
-name = "trustify-common"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "actix-web",
- "anyhow",
- "bytes",
- "bytesize",
- "chrono",
- "clap",
- "cpe",
- "deepsize",
- "hex",
- "hide",
- "human-date-parser",
- "humantime",
- "itertools 0.14.0",
- "lenient_semver",
- "log",
- "native-tls",
- "packageurl",
- "pem",
- "percent-encoding",
- "postgresql_embedded",
- "regex",
- "reqwest 0.12.19",
- "ring",
- "sbom-walker",
- "schemars 0.9.0",
- "sea-orm",
- "sea-query",
- "serde",
- "serde_json",
- "spdx-expression",
- "spdx-rs",
- "sqlx",
- "strum 0.27.1",
- "thiserror 2.0.12",
- "time",
- "tokio",
- "tracing",
- "trustify-migration 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-migration",
  "urlencoding",
  "utoipa",
  "uuid",
@@ -7331,15 +7246,6 @@ dependencies = [
 name = "trustify-cvss"
 version = "0.3.0"
 source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
-dependencies = [
- "serde",
- "utoipa",
-]
-
-[[package]]
-name = "trustify-cvss"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
 dependencies = [
  "serde",
  "utoipa",
@@ -7359,27 +7265,8 @@ dependencies = [
  "strum 0.27.1",
  "thiserror 2.0.12",
  "time",
- "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "utoipa",
-]
-
-[[package]]
-name = "trustify-entity"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "cpe",
- "deepsize",
- "schemars 0.9.0",
- "sea-orm",
- "serde",
- "serde_json",
- "strum 0.27.1",
- "thiserror 2.0.12",
- "time",
- "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-cvss 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-common",
+ "trustify-cvss",
  "utoipa",
 ]
 
@@ -7391,19 +7278,7 @@ dependencies = [
  "sea-orm-migration",
  "serde_json",
  "tokio",
- "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "uuid",
-]
-
-[[package]]
-name = "trustify-migration"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "sea-orm-migration",
- "serde_json",
- "tokio",
- "trustify-cvss 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-cvss",
  "uuid",
 ]
 
@@ -7435,45 +7310,9 @@ dependencies = [
  "time",
  "tokio",
  "tracing",
- "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-entity 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "utoipa",
- "utoipa-actix-web",
- "uuid",
-]
-
-[[package]]
-name = "trustify-module-analysis"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "actix-http",
- "actix-web",
- "anyhow",
- "bytesize",
- "clap",
- "cpe",
- "deepsize",
- "fixedbitset 0.5.7",
- "futures",
- "log",
- "moka",
- "opentelemetry",
- "parking_lot 0.12.4",
- "petgraph 0.8.2",
- "sea-orm",
- "sea-query",
- "serde",
- "serde_json",
- "spdx-rs",
- "thiserror 2.0.12",
- "time",
- "tokio",
- "tracing",
- "trustify-auth 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-entity 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-auth",
+ "trustify-common",
+ "trustify-entity",
  "utoipa",
  "utoipa-actix-web",
  "uuid",
@@ -7512,13 +7351,13 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-futures",
- "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-entity 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-module-analysis 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-module-ingestor 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-module-storage 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
+ "trustify-auth",
+ "trustify-common",
+ "trustify-cvss",
+ "trustify-entity",
+ "trustify-module-analysis",
+ "trustify-module-ingestor",
+ "trustify-module-storage",
  "utoipa",
  "utoipa-actix-web",
  "uuid",
@@ -7562,62 +7401,12 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
- "trustify-auth 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-cvss 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-entity 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-module-analysis 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "trustify-module-storage 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "utoipa",
- "utoipa-actix-web",
- "uuid",
- "zip 4.0.0",
-]
-
-[[package]]
-name = "trustify-module-ingestor"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "actix-web",
- "anyhow",
- "bytes",
- "cpe",
- "csaf",
- "cve",
- "hex",
- "humantime",
- "jsn",
- "jsonpath-rust",
- "lenient_semver",
- "log",
- "osv",
- "packageurl",
- "parking_lot 0.12.4",
- "quick-xml",
- "roxmltree",
- "sbom-walker",
- "sea-orm",
- "sea-query",
- "semver",
- "serde",
- "serde-cyclonedx",
- "serde_json",
- "serde_yaml_ng",
- "spdx-expression",
- "spdx-rs",
- "strum 0.27.1",
- "thiserror 2.0.12",
- "time",
- "tokio",
- "tokio-util",
- "tracing",
- "trustify-auth 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-cvss 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-entity 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-module-analysis 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-module-storage 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-auth",
+ "trustify-common",
+ "trustify-cvss",
+ "trustify-entity",
+ "trustify-module-analysis",
+ "trustify-module-storage",
  "utoipa",
  "utoipa-actix-web",
  "uuid",
@@ -7646,34 +7435,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
- "trustify-common 0.3.0 (git+https://github.com/trustification/trustify.git?tag=v0.3.0)",
- "urlencoding",
- "uuid",
-]
-
-[[package]]
-name = "trustify-module-storage"
-version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
-dependencies = [
- "anyhow",
- "async-compression",
- "aws-config",
- "aws-sdk-s3",
- "aws-smithy-http-client",
- "aws-smithy-types",
- "bytes",
- "clap",
- "futures",
- "hex",
- "log",
- "strum 0.27.1",
- "tempfile",
- "thiserror 2.0.12",
- "tokio",
- "tokio-util",
- "tracing",
- "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-common",
  "urlencoding",
  "uuid",
 ]
@@ -7681,7 +7443,7 @@ dependencies = [
 [[package]]
 name = "trustify-test-context"
 version = "0.3.0"
-source = "git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined#fa4140971e7712de8376e4e1e0b9006a56076702"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.0#dd6f2402c679ec7045801208f3e32cfb2637ac2b"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7701,12 +7463,12 @@ dependencies = [
  "tracing",
  "tracing-flame",
  "tracing-subscriber",
- "trustify-auth 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-common 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-entity 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-migration 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-module-ingestor 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
- "trustify-module-storage 0.3.0 (git+https://github.com/mrizzi/trustify.git?branch=chore-env-not-defined)",
+ "trustify-auth",
+ "trustify-common",
+ "trustify-entity",
+ "trustify-migration",
+ "trustify-module-ingestor",
+ "trustify-module-storage",
  "utoipa-actix-web",
 ]
 
