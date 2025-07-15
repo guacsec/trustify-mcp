@@ -26,11 +26,11 @@ tracing-subscriber = { version = "0.3", features = [
     "std",
     "fmt",
 ] }
-trustify-auth = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.1"}
-trustify-module-fundamental = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.1"}
+trustify-auth = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.3"}
+trustify-module-fundamental = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.3"}
 urlencoding = "2.1"
 
 [dev-dependencies]
 log = "0.4"
 rmcp = { version = "0.2.1", features = ["client", "transport-child-process"] }
-trustify-test-context = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.1"}
+trustify-test-context = { git = "https://github.com/trustification/trustify.git", tag = "v0.3.3"}
