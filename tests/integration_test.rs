@@ -69,7 +69,7 @@ fn tools_list_mcp_inspector() {
               "sort_field"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_VULNERABILITIES_LISTToolCallParam"
+            "title": "VulnerabilitiesListRequest"
           }
         },
         {
@@ -87,7 +87,7 @@ fn tools_list_mcp_inspector() {
               "cve_id"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_VULNERABILITY_DETAILSToolCallParam"
+            "title": "VulnerabilityDetailsRequest"
           }
         },
         {
@@ -96,7 +96,8 @@ fn tools_list_mcp_inspector() {
           "inputSchema": {
             "type": "object",
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "EmptyObject"
+            "title": "EmptyObject",
+            "description": "This is commonly used for representing empty objects in MCP messages.\n\nwithout returning any specific data."
           }
         },
         {
@@ -126,7 +127,7 @@ fn tools_list_mcp_inspector() {
               "sort"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_ADVISORIES_LISTToolCallParam"
+            "title": "AdvisoryListRequest"
           }
         },
         {
@@ -144,7 +145,7 @@ fn tools_list_mcp_inspector() {
               "package_uri_or_purl"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_PURL_VULNERABILITIESToolCallParam"
+            "title": "PurlVulnerabilitiesRequest"
           }
         },
         {
@@ -162,7 +163,7 @@ fn tools_list_mcp_inspector() {
               "sbom_uri"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_SBOM_LIST_ADVISORIESToolCallParam"
+            "title": "SbomUriRequest"
           }
         },
         {
@@ -187,7 +188,7 @@ fn tools_list_mcp_inspector() {
               "query"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_SBOM_LISTToolCallParam"
+            "title": "SbomListRequest"
           }
         },
         {
@@ -205,7 +206,7 @@ fn tools_list_mcp_inspector() {
               "input"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__URL_ENCODEToolCallParam"
+            "title": "UrlEncodeRequest"
           }
         },
         {
@@ -226,7 +227,7 @@ fn tools_list_mcp_inspector() {
               "purls"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_VULNERABILITIES_FOR_MULTIPLE_PURLSToolCallParam"
+            "title": "VulnerabilitiesForMultiplePurlsRequest"
           }
         },
         {
@@ -256,7 +257,7 @@ fn tools_list_mcp_inspector() {
               "sbom_uri"
             ],
             "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "__TRUSTIFY_SBOM_LIST_PACKAGESToolCallParam"
+            "title": "SbomUriRequest"
           }
         }
       ]
@@ -273,12 +274,12 @@ async fn tools_list_mcp_client() -> Result<(), Error> {
         .env("OPENID_CLIENT_ID", "")
         .env("OPENID_CLIENT_SECRET", "");
     // Start server
-    let service = ().serve(TokioChildProcess::new(&mut command)?).await?;
+    let service = ().serve(TokioChildProcess::new(command)?).await?;
 
     // Initialize
     let server_info = service.peer_info();
     log::debug!("Connected to server: {server_info:#?}");
-    assert_eq!(server_info.server_info.name, "mcp-stdio");
+    assert_eq!(server_info.unwrap().server_info.name, "mcp-stdio");
 
     // List tools
     let tools = service.list_all_tools().await?;
