@@ -1,31 +1,10 @@
 use anyhow::Error;
 use rmcp::{ServiceExt, transport::TokioChildProcess};
-use serde_json::json;
+use serde_json::Value;
 use std::{env, process::Command};
 use trustify_test_context::subset::ContainsSubset;
 
-#[test]
-fn tools_list_mcp_inspector() {
-    let inspector_commmand = format!(
-        "npx @modelcontextprotocol/inspector --cli {} --method tools/list",
-        env!("CARGO_BIN_EXE_stdio")
-    );
-    log::debug!("inspector command: {}", inspector_commmand);
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(inspector_commmand)
-        .env("API_URL", "")
-        .env("OPENID_ISSUER_URL", "")
-        .env("OPENID_CLIENT_ID", "")
-        .env("OPENID_CLIENT_SECRET", "")
-        .output()
-        .expect("failed to execute process");
-
-    let result = serde_json::from_str(str::from_utf8(&output.stdout).unwrap_or_default())
-        .unwrap_or_default();
-    log::debug!("{:#?}", result);
-    log::debug!("{:#?}", str::from_utf8(&output.stderr).unwrap_or_default());
-    let expected_result = json!({
+const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
       "tools": [
         {
           "name": "trustify_vulnerabilities_list",
@@ -261,8 +240,45 @@ fn tools_list_mcp_inspector() {
           }
         }
       ]
-    });
+    }"#;
+
+#[test]
+fn tools_list_mcp_inspector_stdio() {
+    let inspector_commmand = format!(
+        "npx @modelcontextprotocol/inspector --cli {} --method tools/list",
+        env!("CARGO_BIN_EXE_stdio")
+    );
+    log::debug!("inspector command: {}", inspector_commmand);
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(inspector_commmand)
+        .env("API_URL", "")
+        .env("OPENID_ISSUER_URL", "")
+        .env("OPENID_CLIENT_ID", "")
+        .env("OPENID_CLIENT_SECRET", "")
+        .output()
+        .expect("failed to execute process");
+
+    let result = serde_json::from_str(str::from_utf8(&output.stdout).unwrap_or_default())
+        .unwrap_or_default();
+    log::debug!("{:#?}", result);
+    log::debug!("{:#?}", str::from_utf8(&output.stderr).unwrap_or_default());
+    let expected_result: Value =
+        serde_json::from_str(EXPECTED_TOOLS_LIST_RESPONSE).unwrap_or_default();
     assert!(expected_result.contains_subset(result));
+}
+
+#[test]
+fn tools_list_mcp_inspector_sse() -> Result<(), Error> {
+    run_server_test(env!("CARGO_BIN_EXE_sse"), "http://localhost:8081/sse")
+}
+
+#[test]
+fn tools_list_mcp_inspector_streamable_http() -> Result<(), Error> {
+    run_server_test(
+        env!("CARGO_BIN_EXE_streamable"),
+        "http://localhost:8000/mcp  --transport http",
+    )
 }
 
 #[tokio::test]
@@ -286,5 +302,35 @@ async fn tools_list_mcp_client() -> Result<(), Error> {
     log::debug!("Available tools: {tools:#?}");
     assert_eq!(tools.len(), 10);
 
+    Ok(())
+}
+
+fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Result<(), Error> {
+    let mut server = Command::new("sh")
+        .arg("-c")
+        .arg(server_command)
+        .env("API_URL", "")
+        .env("OPENID_ISSUER_URL", "")
+        .env("OPENID_CLIENT_ID", "")
+        .env("OPENID_CLIENT_SECRET", "")
+        .spawn()?;
+
+    let inspector_commmand = format!(
+        "npx @modelcontextprotocol/inspector --cli {} --method tools/list",
+        inspector_cli_parameter
+    );
+    log::debug!("inspector command: {}", inspector_commmand);
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(inspector_commmand)
+        .output()?;
+
+    let result: Value = serde_json::from_str(str::from_utf8(&output.stdout)?)?;
+    log::debug!("{:#?}", result);
+
+    let expected_result: Value = serde_json::from_str(EXPECTED_TOOLS_LIST_RESPONSE)?;
+    assert!(expected_result.contains_subset(result));
+
+    server.kill()?;
     Ok(())
 }
