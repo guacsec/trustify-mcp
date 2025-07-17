@@ -4248,9 +4248,9 @@ dependencies = [
 
 [[package]]
 name = "peak_alloc"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29c4e8e2dd832fd76346468f822e4e600d30ba4e5aa545a128abf12cfae7ea3e"
+checksum = "ccc90935a8dd139fdf341762773687a1e361d3f54b396a55d9dd1f7001e484bb"
 
 [[package]]
 name = "pem"
@@ -4742,9 +4742,9 @@ dependencies = [
 
 [[package]]
 name = "quick-xml"
-version = "0.37.5"
+version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "331e97a1af0bf59823e6eadffe373d7b27f485be8748f71471c662c1f269b7fb"
+checksum = "8927b0664f5c5a98265138b7e3f90aa19a6b21353182469ace36d4ac527b7b1b"
 dependencies = [
  "memchr",
 ]
@@ -5605,13 +5605,13 @@ dependencies = [
 
 [[package]]
 name = "schemars"
-version = "0.9.0"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cd191f9397d57d581cddd31014772520aa448f65ef991055d7f61582c65165f"
+checksum = "82d20c4491bc164fa2f6c5d44565947a52ad80b9505d8e36f8d54c27c739fcd0"
 dependencies = [
  "dyn-clone",
  "ref-cast",
- "schemars_derive 0.9.0",
+ "schemars_derive 1.0.4",
  "serde",
  "serde_json",
 ]
@@ -5630,9 +5630,9 @@ dependencies = [
 
 [[package]]
 name = "schemars_derive"
-version = "0.9.0"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5016d94c77c6d32f0b8e08b781f7dc8a90c2007d4e77472cc2807bc10a8438fe"
+checksum = "33d020396d1d138dc19f1165df7545479dcd58d93810dc5d646a16e55abefa80"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -7222,8 +7222,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-auth"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7241,7 +7241,7 @@ dependencies = [
  "log",
  "openid",
  "reqwest 0.12.19",
- "schemars 0.9.0",
+ "schemars 1.0.4",
  "serde",
  "serde_json",
  "serde_yaml_ng",
@@ -7257,8 +7257,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-common"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -7283,7 +7283,7 @@ dependencies = [
  "reqwest 0.12.19",
  "ring",
  "sbom-walker",
- "schemars 0.9.0",
+ "schemars 1.0.4",
  "sea-orm",
  "sea-query",
  "serde",
@@ -7305,8 +7305,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-cvss"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "serde",
  "utoipa",
@@ -7314,12 +7314,12 @@ dependencies = [
 
 [[package]]
 name = "trustify-entity"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "cpe",
  "deepsize",
- "schemars 0.9.0",
+ "schemars 1.0.4",
  "sea-orm",
  "serde",
  "serde_json",
@@ -7333,8 +7333,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-migration"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "sea-orm-migration",
  "tokio",
@@ -7343,8 +7343,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-analysis"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7378,8 +7378,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-fundamental"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -7422,8 +7422,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-ingestor"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -7471,8 +7471,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-storage"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "anyhow",
  "async-compression",
@@ -7498,8 +7498,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-test-context"
-version = "0.3.4"
-source = "git+https://github.com/trustification/trustify.git?tag=v0.3.4#31076b2f3af4f4994cdf6b34ff5af39bd2be93aa"
+version = "0.3.5"
+source = "git+https://github.com/trustification/trustify.git?tag=v0.3.5#0a49e22bf2efc4313de294f985654cd69c58c491"
 dependencies = [
  "actix-http",
  "actix-web",
