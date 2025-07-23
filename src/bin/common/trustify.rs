@@ -5,9 +5,11 @@ use crate::common::trustify_requests::{
 };
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use rmcp::{
-    Error as McpError, Error, ServerHandler,
+    ErrorData, ServerHandler,
     handler::server::tool::{Parameters, ToolRouter},
-    model::*,
+    model::{
+        CallToolResult, Content, Implementation, ProtocolVersion, ServerCapabilities, ServerInfo,
+    },
     tool, tool_handler, tool_router,
 };
 use serde::Serialize;
@@ -80,7 +82,7 @@ impl Trustify {
     }
 
     #[tool(description = "Call the info endpoint for a trustify instance")]
-    async fn trustify_info(&self) -> Result<CallToolResult, McpError> {
+    async fn trustify_info(&self) -> Result<CallToolResult, ErrorData> {
         // Trustify /.well-known/trustify URL
         let url = format!("{}/.well-known/trustify", self.api_base_url);
         self.get(url).await
@@ -90,7 +92,7 @@ impl Trustify {
     async fn trustify_sbom_list(
         &self,
         Parameters(params): Parameters<SbomListRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
             "{}/api/v2/sbom?q={}&limit={}",
             self.api_base_url, params.query, params.limit
@@ -103,7 +105,7 @@ impl Trustify {
         &self,
         Parameters(sbom_uri_param): Parameters<SbomUriRequest>,
         Parameters(sbom_list_packages_params): Parameters<SbomListPackagesRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
             "{}/api/v2/sbom/{}/packages?q={}&limit={}",
             self.api_base_url,
@@ -120,7 +122,7 @@ impl Trustify {
     async fn trustify_sbom_list_advisories(
         &self,
         Parameters(param): Parameters<SbomUriRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
             "{}/api/v2/sbom/{}/advisory",
             self.api_base_url, param.sbom_uri
@@ -134,7 +136,7 @@ impl Trustify {
     async fn trustify_purl_vulnerabilities(
         &self,
         Parameters(param): Parameters<PurlVulnerabilitiesRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
             "{}/api/v2/purl/{}",
             self.api_base_url, param.package_uri_or_purl
@@ -148,7 +150,7 @@ impl Trustify {
     async fn trustify_vulnerabilities_list(
         &self,
         Parameters(params): Parameters<VulnerabilitiesListRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
             "{}/api/v2/vulnerability?limit={}&offset=0&q={}%26published>{}%26published<{}&sort={}:{}",
             self.api_base_url,
@@ -168,7 +170,7 @@ impl Trustify {
     async fn trustify_vulnerabilities_for_multiple_purls(
         &self,
         Parameters(param): Parameters<VulnerabilitiesForMultiplePurlsRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let mut purl_data = HashMap::new();
         purl_data.insert("purls", param.purls);
 
@@ -184,7 +186,7 @@ impl Trustify {
             match response.json() {
                 Ok(response_json) => response_json,
                 Err(error) => {
-                    return Err(Error::internal_error(
+                    return Err(ErrorData::internal_error(
                         format!("Trustify API returned error: {:?}", error),
                         None,
                     ));
@@ -232,7 +234,7 @@ impl Trustify {
     async fn trustify_vulnerability_details(
         &self,
         Parameters(param): Parameters<VulnerabilityDetailsRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         self.get(format!(
             "{}/api/v2/vulnerability/{}",
             self.api_base_url, param.cve_id
@@ -246,7 +248,7 @@ impl Trustify {
     async fn trustify_advisories_list(
         &self,
         Parameters(params): Parameters<AdvisoryListRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
             "{}/api/v2/advisory?limit={}&offset=0&q={}&sort={}",
             self.api_base_url, params.limit, params.query, params.sort
@@ -258,13 +260,13 @@ impl Trustify {
     fn url_encode(
         &self,
         Parameters(param): Parameters<UrlEncodeRequest>,
-    ) -> Result<CallToolResult, McpError> {
+    ) -> Result<CallToolResult, ErrorData> {
         Ok(CallToolResult::success(vec![Content::text(
             urlencoding::encode(param.input.as_str()),
         )]))
     }
 
-    async fn get(&self, url: String) -> Result<CallToolResult, Error> {
+    async fn get(&self, url: String) -> Result<CallToolResult, ErrorData> {
         self.call(self.http_client.get(url)).await
     }
 
@@ -273,11 +275,11 @@ impl Trustify {
         &self,
         url: String,
         json: &T,
-    ) -> Result<CallToolResult, Error> {
+    ) -> Result<CallToolResult, ErrorData> {
         self.call(self.http_client.post(url).json(json)).await
     }
 
-    async fn call(&self, request_builder: RequestBuilder) -> Result<CallToolResult, Error> {
+    async fn call(&self, request_builder: RequestBuilder) -> Result<CallToolResult, ErrorData> {
         // Call and get the response
         let response = self.call_raw(request_builder).await?;
 
@@ -285,7 +287,7 @@ impl Trustify {
         let response_json: Value = match response.json() {
             Ok(response_json) => response_json,
             Err(error) => {
-                return Err(Error::internal_error(
+                return Err(ErrorData::internal_error(
                     format!("Trustify API returned error: {:?}", error),
                     None,
                 ));
@@ -299,16 +301,16 @@ impl Trustify {
         &self,
         url: String,
         json: &T,
-    ) -> Result<Response, Error> {
+    ) -> Result<Response, ErrorData> {
         self.call_raw(self.http_client.post(url).json(json)).await
     }
 
-    async fn call_raw(&self, request_builder: RequestBuilder) -> Result<Response, Error> {
+    async fn call_raw(&self, request_builder: RequestBuilder) -> Result<Response, ErrorData> {
         // Send the request
         let response = match request_builder.bearer_auth(self.get_bearer().await).send() {
             Ok(response) => response,
             Err(error) => {
-                return Err(Error::internal_error(
+                return Err(ErrorData::internal_error(
                     format!("Trustify API returned error: {error:?}"),
                     None,
                 ));
@@ -317,7 +319,7 @@ impl Trustify {
 
         // Check if the request was successful
         if !response.status().is_success() {
-            return Err(Error::internal_error(
+            return Err(ErrorData::internal_error(
                 format!("Trustify API returned status code: {}", response.status()),
                 None,
             ));
