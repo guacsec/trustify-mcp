@@ -313,6 +313,7 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
         .env("OPENID_ISSUER_URL", "")
         .env("OPENID_CLIENT_ID", "")
         .env("OPENID_CLIENT_SECRET", "")
+        .env("AUTH_DISABLED", "true")
         .spawn()?;
 
     let inspector_commmand = format!(
