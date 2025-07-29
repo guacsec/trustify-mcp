@@ -31,3 +31,12 @@ To run the MCP Server with the SSE transportation using `cargo run`, execute
 API_URL=<API URL> OPENID_ISSUER_URL=<OpenID Issuer URL> OPENID_CLIENT_ID=<OpenID Client ID> OPENID_CLIENT_SECRET=<OpenID Client secret> cargo run --release --bin sse
 ```
 and it will be available at the URL http://localhost:8081/sse
+
+## Streamable HTTP
+
+To run the MCP Server with the Streamable HTTP transportation using `cargo run`, execute
+
+```shell
+API_URL=<API URL> OPENID_ISSUER_URL=<OpenID Issuer URL> OPENID_CLIENT_ID=<OpenID Client ID> OPENID_CLIENT_SECRET=<OpenID Client secret> cargo run --release --bin streamable
+```
+and it will be available at the URL http://localhost:8082/mcp

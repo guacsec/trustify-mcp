@@ -277,7 +277,7 @@ fn tools_list_mcp_inspector_sse() -> Result<(), Error> {
 fn tools_list_mcp_inspector_streamable_http() -> Result<(), Error> {
     run_server_test(
         env!("CARGO_BIN_EXE_streamable"),
-        "http://localhost:8000/mcp  --transport http",
+        "http://localhost:8082/mcp  --transport http",
     )
 }
 

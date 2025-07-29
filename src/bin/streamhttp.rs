@@ -10,7 +10,7 @@ use tracing_subscriber::{
 mod common;
 use common::trustify::Trustify;
 
-const BIND_ADDRESS: &str = "[::]:8000";
+const BIND_ADDRESS: &str = "[::]:8082";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
