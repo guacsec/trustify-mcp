@@ -12,6 +12,8 @@ To run the MCP server, both stdio and SSE, some env variables must be provided i
 - OPENID_CLIENT_ID: The ID of the client for the OpenID provider
 - OPENID_CLIENT_SECRET: The secret of the client for the OpenID provider
 
+For development purposes, the authentication to the MCP server (not to the remote Trustify APIs) can be disabled running the MCP server with the environment variable `AUTH_DISABLED=true`.
+
 ## Stdio
 
 The MCP Clients, e.g. [MCP Inspector](https://github.com/modelcontextprotocol/inspector) and Claude Desktop, usually requires the path to the binary of the MCP Server so it's a matter of building the Trustify MCP Server with the stdio transportation in order to consume it from MCP Clients.  
