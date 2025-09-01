@@ -6,7 +6,8 @@ use crate::common::trustify_requests::{
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use rmcp::{
     ErrorData, ServerHandler,
-    handler::server::tool::{Parameters, ToolRouter},
+    handler::server::tool::ToolRouter,
+    handler::server::wrapper::Parameters,
     model::{
         CallToolResult, Content, Implementation, ProtocolVersion, ServerCapabilities, ServerInfo,
     },
