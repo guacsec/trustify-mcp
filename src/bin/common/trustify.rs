@@ -1,6 +1,6 @@
 use crate::common::trustify_requests::{
-    AdvisoryListRequest, PurlVulnerabilitiesRequest, SbomListPackagesRequest, SbomListRequest,
-    SbomUriRequest, UrlEncodeRequest, VulnerabilitiesForMultiplePurlsRequest,
+    AdvisoryListRequest, AdvisoryUriRequest, PurlVulnerabilitiesRequest, SbomListPackagesRequest,
+    SbomListRequest, SbomUriRequest, UrlEncodeRequest, VulnerabilitiesForMultiplePurlsRequest,
     VulnerabilitiesListRequest, VulnerabilityDetailsRequest,
 };
 use reqwest::blocking::{Client, RequestBuilder, Response};
@@ -90,7 +90,7 @@ impl Trustify {
     }
 
     #[tool(description = "Get a list of sboms from a trustify instance")]
-    async fn trustify_sbom_list(
+    async fn trustify_sboms_list(
         &self,
         Parameters(params): Parameters<SbomListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
@@ -98,6 +98,15 @@ impl Trustify {
             "{}/api/v2/sbom?q={}&limit={}",
             self.api_base_url, params.query, params.limit
         );
+        self.get(url).await
+    }
+
+    #[tool(description = "Get the details of a SBOM from a trustify instance by SBOM URI")]
+    async fn trustify_sbom_details(
+        &self,
+        Parameters(params): Parameters<SbomUriRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let url = format!("{}/api/v2/sbom/{}", self.api_base_url, params.sbom_uri);
         self.get(url).await
     }
 
@@ -257,6 +266,18 @@ impl Trustify {
         self.get(url).await
     }
 
+    #[tool(description = "Get the details of a advisory from a trustify instance by advisory URI")]
+    async fn trustify_advisory_details(
+        &self,
+        Parameters(params): Parameters<AdvisoryUriRequest>,
+    ) -> Result<CallToolResult, ErrorData> {
+        let url = format!(
+            "{}/api/v2/advisory/{}",
+            self.api_base_url, params.advisory_uri
+        );
+        self.get(url).await
+    }
+
     #[tool(description = "URL encode a string")]
     fn url_encode(
         &self,
@@ -289,7 +310,7 @@ impl Trustify {
             Ok(response_json) => response_json,
             Err(error) => {
                 return Err(ErrorData::internal_error(
-                    format!("Trustify API returned error: {:?}", error),
+                    format!("Trustify API JSON error: {:?}", error),
                     None,
                 ));
             }

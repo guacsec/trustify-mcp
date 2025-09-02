@@ -5,242 +5,266 @@ use std::{env, process::Command};
 use trustify_test_context::subset::ContainsSubset;
 
 const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
-      "tools": [
-        {
-          "name": "trustify_vulnerabilities_list",
-          "description": "Get a list of vulnerabilities from a trustify instance filtering them by severity and publication date and sorted by publish date",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "limit": {
-                "description": "Maximum number of vulnerabilities to return, default 1000",
-                "type": "integer",
-                "format": "uint",
-                "minimum": 0
-              },
-              "published_after": {
-                "description": "Date after which the vulnerability has to be published, provided in the format 2025-04-20T22:00:00.000Z",
-                "type": "string"
-              },
-              "published_before": {
-                "description": "Date before which the vulnerability has to be published, provided in the format 2025-04-20T22:00:00.000Z",
-                "type": "string"
-              },
-              "query": {
-                "description": "Query for vulnerabilities, e.g. base_severity=critical|high",
-                "type": "string"
-              },
-              "sort_direction": {
-                "description": "Sort direction, values allowed are only 'desc' and 'asc', default is 'desc'",
-                "type": "string"
-              },
-              "sort_field": {
-                "description": "Field used to sort the vulnerabilities in the output, e.g. 'published'",
-                "type": "string"
-              }
-            },
-            "required": [
-              "limit",
-              "published_after",
-              "published_before",
-              "query",
-              "sort_direction",
-              "sort_field"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "VulnerabilitiesListRequest"
+  "tools": [
+    {
+      "name": "trustify_advisory_details",
+      "description": "Get the details of a advisory from a trustify instance by advisory URI",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "advisory_uri": {
+            "description": "Advisory URI",
+            "type": "string"
           }
         },
-        {
-          "name": "trustify_vulnerability_details",
-          "description": "Get the details of a vulnerability from a trustify instance by CVE ID",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "cve_id": {
-                "description": "Vulnerability CVE ID",
-                "type": "string"
-              }
-            },
-            "required": [
-              "cve_id"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "VulnerabilityDetailsRequest"
+        "required": [
+          "advisory_uri"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "AdvisoryUriRequest"
+      }
+    },
+    {
+      "name": "trustify_vulnerabilities_for_multiple_purls",
+      "description": "Get a list of vulnerabilities from a trustify instance affecting the array of PURLs provided in input",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "purls": {
+            "description": "Array of PURLs to be investigated for vulnerabilities.\n        The array must be delimited by square brackets [] and it must contain strings delimited by double quotes\".\n        For example: [\"pkg:maven/org.jenkins-ci.main/jenkins-core@2.145\", \"pkg:pypi/tensorflow-gpu@2.6.5\"]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
-        {
-          "name": "trustify_info",
-          "description": "Call the info endpoint for a trustify instance",
-          "inputSchema": {
-            "type": "object",
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "EmptyObject",
-            "description": "This is commonly used for representing empty objects in MCP messages.\n\nwithout returning any specific data."
+        "required": [
+          "purls"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "VulnerabilitiesForMultiplePurlsRequest"
+      }
+    },
+    {
+      "name": "url_encode",
+      "description": "URL encode a string",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "description": "String to be URL encoded",
+            "type": "string"
           }
         },
-        {
-          "name": "trustify_advisories_list",
-          "description": "Get a list of advisories from a trustify instance filtering them by severity and publication date and sorted by publish date",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "limit": {
-                "description": "Maximum number of advisories to return, default 1000",
-                "type": "integer",
-                "format": "uint",
-                "minimum": 0
-              },
-              "query": {
-                "description": "Query for advisories defined using the following EBNF grammar (ISO/IEC 14977):\n                (* Query Grammar - EBNF Compliant *)\n                query = ( values | filter ) , { \"&\" , query } ;\n                values = value , { \"|\" , value } ;\n                filter = field , operator , values ;\n                operator = \"=\" | \"!=\" | \"~\" | \"!~\" | \">=\" | \">\" | \"<=\" | \"<\" ;\n                field = \"average_score\" | \"average_severity\" | \"modified\" | \"title\" ;\n                value = { value_char } ;\n                value_char = escaped_char | normal_char ;\n                escaped_char = \"\\\" , special_char ;\n                normal_char = ? any character except '&', '|', '=', '!', '~', '>', '<', '\\' ? ;\n                special_char = \"&\" | \"|\" | \"=\" | \"!\" | \"~\" | \">\" | \"<\" | \"\\\" ;\n                (* Examples:\n                    - Simple filter: title=example\n                    - Multiple values filter: title=foo|bar|baz\n                    - Complex filter: modified>2024-01-01\n                    - Combined query: title=foo&average_severity=high\n                    - Escaped characters: title=foo\\&bar\n                *)",
-                "type": "string"
-              },
-              "sort": {
-                "description": "Query for advisories defined using the following EBNF grammar (ISO/IEC 14977):\n                (* Query Grammar - EBNF Compliant *)\n                sort = field [ ':', order ] { ',' sort }\n                order = ( \"asc\" | \"desc\" )\n                field = \"id\" | \"modified\" | \"title\" ;\n                (* Examples:\n                    - Simple sorting: published:desc\n                *)",
-                "type": "string"
-              }
-            },
-            "required": [
-              "limit",
-              "query",
-              "sort"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "AdvisoryListRequest"
+        "required": [
+          "input"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "UrlEncodeRequest"
+      }
+    },
+    {
+      "name": "trustify_sbom_details",
+      "description": "Get the details of a SBOM from a trustify instance by SBOM URI",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sbom_uri": {
+            "description": "Sbom URI",
+            "type": "string"
           }
         },
-        {
-          "name": "trustify_purl_vulnerabilities",
-          "description": "Provide a package url-encoded PURL to get the list of vulnerabilities affecting if from a trustify instance",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "package_uri_or_purl": {
-                "description": "Package URI or package PURL. Values must be url-encoded",
-                "type": "string"
-              }
-            },
-            "required": [
-              "package_uri_or_purl"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "PurlVulnerabilitiesRequest"
+        "required": [
+          "sbom_uri"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "SbomUriRequest"
+      }
+    },
+    {
+      "name": "trustify_sboms_list",
+      "description": "Get a list of sboms from a trustify instance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Search query for sboms",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum number of sboms to return",
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0
           }
         },
-        {
-          "name": "trustify_sbom_list_advisories",
-          "description": "Provide the SBOM ID URN UUID to get a list of all the advisories with vulnerabilities related to an SBOM from a trustify instance",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "sbom_uri": {
-                "description": "Sbom URI",
-                "type": "string"
-              }
-            },
-            "required": [
-              "sbom_uri"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "SbomUriRequest"
+        "required": [
+          "query",
+          "limit"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "SbomListRequest"
+      }
+    },
+    {
+      "name": "trustify_vulnerability_details",
+      "description": "Get the details of a vulnerability from a trustify instance by CVE ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cve_id": {
+            "description": "Vulnerability CVE ID",
+            "type": "string"
           }
         },
-        {
-          "name": "trustify_sbom_list",
-          "description": "Get a list of sboms from a trustify instance",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "limit": {
-                "description": "Maximum number of sboms to return",
-                "type": "integer",
-                "format": "uint",
-                "minimum": 0
-              },
-              "query": {
-                "description": "Search query for sboms",
-                "type": "string"
-              }
-            },
-            "required": [
-              "limit",
-              "query"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "SbomListRequest"
+        "required": [
+          "cve_id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "VulnerabilityDetailsRequest"
+      }
+    },
+    {
+      "name": "trustify_sbom_list_advisories",
+      "description": "Provide the SBOM ID URN UUID to get a list of all the advisories with vulnerabilities related to an SBOM from a trustify instance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sbom_uri": {
+            "description": "Sbom URI",
+            "type": "string"
           }
         },
-        {
-          "name": "url_encode",
-          "description": "URL encode a string",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "input": {
-                "description": "String to be URL encoded",
-                "type": "string"
-              }
-            },
-            "required": [
-              "input"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "UrlEncodeRequest"
+        "required": [
+          "sbom_uri"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "SbomUriRequest"
+      }
+    },
+    {
+      "name": "trustify_sbom_list_packages",
+      "description": "Get a list of packages contained in an sboms from a trustify instance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sbom_uri": {
+            "description": "Sbom URI",
+            "type": "string"
           }
         },
-        {
-          "name": "trustify_vulnerabilities_for_multiple_purls",
-          "description": "Get a list of vulnerabilities from a trustify instance affecting the array of PURLs provided in input",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "purls": {
-                "description": "Array of PURLs to be investigated for vulnerabilities.\n        The array must be delimited by square brackets [] and it must contain strings delimited by double quotes\".\n        For example: [\"pkg:maven/org.jenkins-ci.main/jenkins-core@2.145\", \"pkg:pypi/tensorflow-gpu@2.6.5\"]",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            },
-            "required": [
-              "purls"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "VulnerabilitiesForMultiplePurlsRequest"
+        "required": [
+          "sbom_uri"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "SbomUriRequest"
+      }
+    },
+    {
+      "name": "trustify_info",
+      "description": "Call the info endpoint for a trustify instance",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "EmptyObject",
+        "description": "This is commonly used for representing empty objects in MCP messages.\n\nwithout returning any specific data."
+      }
+    },
+    {
+      "name": "trustify_vulnerabilities_list",
+      "description": "Get a list of vulnerabilities from a trustify instance filtering them by severity and publication date and sorted by publish date",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Query for vulnerabilities, e.g. base_severity=critical|high",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum number of vulnerabilities to return, default 1000",
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0
+          },
+          "published_after": {
+            "description": "Date after which the vulnerability has to be published, provided in the format 2025-04-20T22:00:00.000Z",
+            "type": "string"
+          },
+          "published_before": {
+            "description": "Date before which the vulnerability has to be published, provided in the format 2025-04-20T22:00:00.000Z",
+            "type": "string"
+          },
+          "sort_field": {
+            "description": "Field used to sort the vulnerabilities in the output, e.g. 'published'",
+            "type": "string"
+          },
+          "sort_direction": {
+            "description": "Sort direction, values allowed are only 'desc' and 'asc', default is 'desc'",
+            "type": "string"
           }
         },
-        {
-          "name": "trustify_sbom_list_packages",
-          "description": "Get a list of packages contained in an sboms from a trustify instance",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "limit": {
-                "description": "Maximum number of packages to return",
-                "type": "integer",
-                "format": "uint",
-                "minimum": 0
-              },
-              "query": {
-                "description": "Search query for packages within the SBOM",
-                "type": "string"
-              },
-              "sbom_uri": {
-                "description": "Sbom URI",
-                "type": "string"
-              }
-            },
-            "required": [
-              "limit",
-              "query",
-              "sbom_uri"
-            ],
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": "SbomUriRequest"
+        "required": [
+          "query",
+          "limit",
+          "published_after",
+          "published_before",
+          "sort_field",
+          "sort_direction"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "VulnerabilitiesListRequest"
+      }
+    },
+    {
+      "name": "trustify_purl_vulnerabilities",
+      "description": "Provide a package url-encoded PURL to get the list of vulnerabilities affecting if from a trustify instance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "package_uri_or_purl": {
+            "description": "Package URI or package PURL. Values must be url-encoded",
+            "type": "string"
           }
-        }
-      ]
-    }"#;
+        },
+        "required": [
+          "package_uri_or_purl"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "PurlVulnerabilitiesRequest"
+      }
+    },
+    {
+      "name": "trustify_advisories_list",
+      "description": "Get a list of advisories from a trustify instance filtering them by severity and publication date and sorted by publish date",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Query for advisories defined using the following EBNF grammar (ISO/IEC 14977):\n                (* Query Grammar - EBNF Compliant *)\n                query = ( values | filter ) , { \"&\" , query } ;\n                values = value , { \"|\" , value } ;\n                filter = field , operator , values ;\n                operator = \"=\" | \"!=\" | \"~\" | \"!~\" | \">=\" | \">\" | \"<=\" | \"<\" ;\n                field = \"average_score\" | \"average_severity\" | \"modified\" | \"title\" ;\n                value = { value_char } ;\n                value_char = escaped_char | normal_char ;\n                escaped_char = \"\\\" , special_char ;\n                normal_char = ? any character except '&', '|', '=', '!', '~', '>', '<', '\\' ? ;\n                special_char = \"&\" | \"|\" | \"=\" | \"!\" | \"~\" | \">\" | \"<\" | \"\\\" ;\n                (* Examples:\n                    - Simple filter: title=example\n                    - Multiple values filter: title=foo|bar|baz\n                    - Complex filter: modified>2024-01-01\n                    - Combined query: title=foo&average_severity=high\n                    - Escaped characters: title=foo\\&bar\n                *)",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum number of advisories to return, default 1000",
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0
+          },
+          "sort": {
+            "description": "Query for advisories defined using the following EBNF grammar (ISO/IEC 14977):\n                (* Query Grammar - EBNF Compliant *)\n                sort = field [ ':', order ] { ',' sort }\n                order = ( \"asc\" | \"desc\" )\n                field = \"id\" | \"modified\" | \"title\" ;\n                (* Examples:\n                    - Simple sorting: published:desc\n                *)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "limit",
+          "sort"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "AdvisoryListRequest"
+      }
+    }
+  ]
+}"#;
 
 #[test]
 fn tools_list_mcp_inspector_stdio() {
@@ -300,7 +324,7 @@ async fn tools_list_mcp_client() -> Result<(), Error> {
     // List tools
     let tools = service.list_all_tools().await?;
     log::debug!("Available tools: {tools:#?}");
-    assert_eq!(tools.len(), 10);
+    assert_eq!(tools.len(), 12);
 
     Ok(())
 }

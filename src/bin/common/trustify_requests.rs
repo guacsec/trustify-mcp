@@ -110,6 +110,12 @@ pub struct AdvisoryListRequest {
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct AdvisoryUriRequest {
+    #[schemars(description = "Advisory URI")]
+    pub(crate) advisory_uri: String,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct UrlEncodeRequest {
     #[schemars(description = "String to be URL encoded")]
     pub(crate) input: String,
