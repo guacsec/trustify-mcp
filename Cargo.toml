@@ -15,6 +15,10 @@ path = "src/bin/sse.rs"
 name = "streamable"
 path = "src/bin/streamhttp.rs"
 
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+
 [dependencies]
 anyhow = "1.0"
 axum = { version = "0.8", features = ["macros"] }
