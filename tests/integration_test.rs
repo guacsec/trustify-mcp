@@ -305,6 +305,16 @@ fn tools_list_mcp_inspector_streamable_http() -> Result<(), Error> {
     )
 }
 
+#[test]
+fn tools_list_mcp_inspector_server() -> Result<(), Error> {
+    run_server_test(env!("CARGO_BIN_EXE_server"), "http://localhost:8083/sse").and_then(|()| {
+        run_server_test(
+            env!("CARGO_BIN_EXE_server"),
+            "http://localhost:8083/mcp --transport http",
+        )
+    })
+}
+
 #[tokio::test]
 async fn tools_list_mcp_client() -> Result<(), Error> {
     let mut command = tokio::process::Command::new(env!("CARGO_BIN_EXE_stdio"));
@@ -350,12 +360,13 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
         .arg(inspector_commmand)
         .output()?;
 
+    server.kill()?;
+
     let result: Value = serde_json::from_str(str::from_utf8(&output.stdout)?)?;
     log::debug!("{:#?}", result);
 
     let expected_result: Value = serde_json::from_str(EXPECTED_TOOLS_LIST_RESPONSE)?;
     assert!(expected_result.contains_subset(result));
 
-    server.kill()?;
     Ok(())
 }
