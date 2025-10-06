@@ -362,6 +362,7 @@ impl ServerHandler for Trustify {
             server_info: Implementation {
                 name: format!("{}-{}", env!("CARGO_PKG_NAME"), env!("CARGO_CRATE_NAME")).to_owned(),
                 version: env!("CARGO_PKG_VERSION").to_owned(),
+                ..Default::default()
             },
             instructions: Some("This server provides tools for interacting with a Trustify remote instance. The tools are able to retrieve info about the Trustify instance itself, the list of the SBOMs ingested, the packages and the vulnerabilities related to each SBOM. Further it can retrieve the vulnerabilities information ingested. More information about Trustify at https://github.com/trustification/trustify".to_string()),
         }
