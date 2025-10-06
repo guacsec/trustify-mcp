@@ -165,9 +165,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
       "description": "Call the info endpoint for a trustify instance",
       "inputSchema": {
         "type": "object",
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "title": "EmptyObject",
-        "description": "This is commonly used for representing empty objects in MCP messages.\n\nwithout returning any specific data."
+        "properties": {}
       }
     },
     {
