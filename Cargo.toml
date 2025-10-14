@@ -23,7 +23,7 @@ path = "src/bin/server.rs"
 anyhow = "1.0"
 axum = { version = "0.8", features = ["macros"] }
 chrono = "0.4"
-openid = "0.17"
+openid = "0.18.0"
 reqwest = { version = "0.12", features = ["json", "blocking"] }
 rmcp = { version = "0.8.1", features = ["server", "transport-sse-server", "transport-io", "transport-streamable-http-server"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -36,11 +36,11 @@ tracing-subscriber = { version = "0.3", features = [
     "std",
     "fmt",
 ] }
-trustify-auth = { git = "https://github.com/guacsec/trustify.git", tag = "v0.3.5"}
-trustify-module-fundamental = { git = "https://github.com/guacsec/trustify.git", tag = "v0.3.5"}
+trustify-auth = { git = "https://github.com/guacsec/trustify.git", tag = "v0.4.0"}
+trustify-module-fundamental = { git = "https://github.com/guacsec/trustify.git", tag = "v0.4.0"}
 urlencoding = "2.1"
 
 [dev-dependencies]
 log = "0.4"
 rmcp = { version = "0.8.1", features = ["client", "transport-child-process"] }
-trustify-test-context = { git = "https://github.com/guacsec/trustify.git", tag = "v0.3.5"}
+trustify-test-context = { git = "https://github.com/guacsec/trustify.git", tag = "v0.4.0"}
