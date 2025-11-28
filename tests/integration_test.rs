@@ -2,6 +2,7 @@ use anyhow::Error;
 use rmcp::{ServiceExt, transport::TokioChildProcess};
 use serde_json::Value;
 use std::{env, process::Command};
+use test_log::test;
 use trustify_test_context::subset::ContainsSubset;
 
 const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
@@ -20,7 +21,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "advisory_uri"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "AdvisoryUriRequest"
       }
     },
@@ -41,7 +42,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "purls"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "VulnerabilitiesForMultiplePurlsRequest"
       }
     },
@@ -59,7 +60,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "input"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "UrlEncodeRequest"
       }
     },
@@ -77,7 +78,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "sbom_uri"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "SbomUriRequest"
       }
     },
@@ -102,7 +103,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
           "query",
           "limit"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "SbomListRequest"
       }
     },
@@ -120,7 +121,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "cve_id"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "VulnerabilityDetailsRequest"
       }
     },
@@ -138,7 +139,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "sbom_uri"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "SbomUriRequest"
       }
     },
@@ -156,7 +157,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "sbom_uri"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "SbomUriRequest"
       }
     },
@@ -209,7 +210,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
           "sort_field",
           "sort_direction"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "VulnerabilitiesListRequest"
       }
     },
@@ -227,7 +228,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "package_uri_or_purl"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "PurlVulnerabilitiesRequest"
       }
     },
@@ -257,7 +258,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
           "limit",
           "sort"
         ],
-        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "AdvisoryListRequest"
       }
     }
@@ -283,8 +284,11 @@ fn tools_list_mcp_inspector_stdio() {
 
     let result = serde_json::from_str(str::from_utf8(&output.stdout).unwrap_or_default())
         .unwrap_or_default();
-    log::debug!("{:#?}", result);
-    log::debug!("{:#?}", str::from_utf8(&output.stderr).unwrap_or_default());
+    log::debug!("Result {:#?}", result);
+    log::debug!(
+        "Stderr {:#?}",
+        str::from_utf8(&output.stderr).unwrap_or_default()
+    );
     let expected_result: Value =
         serde_json::from_str(EXPECTED_TOOLS_LIST_RESPONSE).unwrap_or_default();
     assert!(expected_result.contains_subset(result));
