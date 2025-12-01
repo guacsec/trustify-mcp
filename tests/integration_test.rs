@@ -7,6 +7,25 @@ use std::{env, process::Command};
 use test_log::test;
 use trustify_test_context::subset::ContainsSubset;
 
+const DEFAULT_READINESS_MAX_ATTEMPTS: u32 = 10;
+const DEFAULT_READINESS_INTERVAL_MS: u64 = 200;
+
+fn readiness_max_attempts() -> u32 {
+    env::var("MCP_SERVER_READY_MAX_ATTEMPTS")
+        .ok()
+        .and_then(|v| v.parse::<u32>().ok())
+        .unwrap_or(DEFAULT_READINESS_MAX_ATTEMPTS)
+}
+
+fn readiness_interval() -> Duration {
+    let interval_ms = env::var("MCP_SERVER_READY_INTERVAL_MS")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .unwrap_or(DEFAULT_READINESS_INTERVAL_MS);
+
+    Duration::from_millis(interval_ms)
+}
+
 const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
   "tools": [
     {
@@ -355,19 +374,34 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
         .spawn()?;
 
     let mut is_ready = false;
-    for _ in 0..10 {
-        log::debug!("waiting for server ready");
-        // Max 10 tries
-        if reqwest::blocking::get(inspector_cli_parameter).is_ok() {
-            is_ready = true;
-            break;
+    let mut last_err: Option<reqwest::Error> = None;
+    let max_attempts = readiness_max_attempts();
+    let interval = readiness_interval();
+
+    for attempt in 1..=max_attempts {
+        log::debug!(
+            "waiting for server ready (attempt {attempt}/{max_attempts}, interval {:?})",
+            interval
+        );
+
+        match reqwest::blocking::get(inspector_cli_parameter) {
+            Ok(_) => {
+                is_ready = true;
+                last_err = None;
+                break;
+            }
+            Err(err) => {
+                last_err = Some(err);
+            }
         }
-        sleep(Duration::from_millis(200));
+
+        sleep(interval);
     }
 
     assert!(
         is_ready,
-        "{inspector_cli_parameter} endpoint never responded"
+        "Inspector endpoint `{}` never responded after {} attempts (interval {:?}). Last error: {:?}",
+        inspector_cli_parameter, max_attempts, interval, last_err
     );
 
     let inspector_commmand = format!(
