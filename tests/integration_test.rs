@@ -1,6 +1,8 @@
 use anyhow::Error;
 use rmcp::{ServiceExt, transport::TokioChildProcess};
 use serde_json::Value;
+use std::thread::sleep;
+use std::time::Duration;
 use std::{env, process::Command};
 use test_log::test;
 use trustify_test_context::subset::ContainsSubset;
@@ -352,6 +354,22 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
         .env("AUTH_DISABLED", "true")
         .spawn()?;
 
+    let mut is_ready = false;
+    for _ in 0..10 {
+        log::debug!("waiting for server ready");
+        // Max 10 tries
+        if reqwest::blocking::get(inspector_cli_parameter).is_ok() {
+            is_ready = true;
+            break;
+        }
+        sleep(Duration::from_millis(200));
+    }
+
+    assert!(
+        is_ready,
+        "{inspector_cli_parameter} endpoint never responded"
+    );
+
     let inspector_commmand = format!(
         "npx @modelcontextprotocol/inspector --cli {} --method tools/list",
         inspector_cli_parameter
@@ -363,9 +381,13 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
         .output()?;
 
     server.kill()?;
+    log::debug!(
+        "Stderr {:#?}",
+        str::from_utf8(&output.stderr).unwrap_or_default()
+    );
 
     let result: Value = serde_json::from_str(str::from_utf8(&output.stdout)?)?;
-    log::debug!("{:#?}", result);
+    log::debug!("Result {:#?}", result);
 
     let expected_result: Value = serde_json::from_str(EXPECTED_TOOLS_LIST_RESPONSE)?;
     assert!(expected_result.contains_subset(result));
