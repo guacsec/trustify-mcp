@@ -1632,9 +1632,9 @@ dependencies = [
 
 [[package]]
 name = "cve"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bba109f3a468c9e2cd871c259040cf11ca95caaaed10427c6c8879515ae87896"
+checksum = "3077b0b3df7108da3ff51db5c258785866d0c2392b7dd63c554b085d3bc075cc"
 dependencies = [
  "serde",
  "serde_json",
@@ -6168,9 +6168,9 @@ dependencies = [
 
 [[package]]
 name = "test-context"
-version = "0.4.1"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb69cce03e432993e2dc1f93f7899b952300fcb6dc44191a1b830b60b8c3c8aa"
+checksum = "7d94db16dc1c321805ce55f286c4023fa58a2c9c742568f95c5cfe2e95d250d7"
 dependencies = [
  "futures",
  "test-context-macros",
@@ -6178,9 +6178,9 @@ dependencies = [
 
 [[package]]
 name = "test-context-macros"
-version = "0.4.1"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97e0639209021e54dbe19cafabfc0b5574b078c37358945e6d473eabe39bb974"
+checksum = "aabcca9d2cad192cfe258cd3562b7584516191a5c9b6a0002a6bb8b75ee7d21d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6568,8 +6568,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-auth"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -6603,8 +6603,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-common"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -6650,8 +6650,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-cvss"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "serde",
  "utoipa",
@@ -6659,8 +6659,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-db"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "anyhow",
  "log",
@@ -6674,8 +6674,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-entity"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "cpe",
  "deepsize",
@@ -6693,8 +6693,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-migration"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "sea-orm-migration",
  "tokio",
@@ -6703,8 +6703,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-analysis"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -6738,8 +6738,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-fundamental"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -6787,8 +6787,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-ingestor"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -6836,8 +6836,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-module-storage"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "anyhow",
  "async-compression",
@@ -6863,16 +6863,16 @@ dependencies = [
 
 [[package]]
 name = "trustify-query"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "utoipa",
 ]
 
 [[package]]
 name = "trustify-query-derive"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "quote",
  "syn 2.0.101",
@@ -6880,8 +6880,8 @@ dependencies = [
 
 [[package]]
 name = "trustify-test-context"
-version = "0.4.4"
-source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.4#05a3af91d17cfcb3d935c2326878f86a45c43d1d"
+version = "0.4.5"
+source = "git+https://github.com/guacsec/trustify.git?tag=v0.4.5#ced60da9b158d52215bf5bb38cbba981548006e8"
 dependencies = [
  "actix-http",
  "actix-web",
