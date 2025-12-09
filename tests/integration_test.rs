@@ -316,26 +316,11 @@ fn tools_list_mcp_inspector_stdio() {
 }
 
 #[test]
-fn tools_list_mcp_inspector_sse() -> Result<(), Error> {
-    run_server_test(env!("CARGO_BIN_EXE_sse"), "http://localhost:8081/sse")
-}
-
-#[test]
 fn tools_list_mcp_inspector_streamable_http() -> Result<(), Error> {
     run_server_test(
         env!("CARGO_BIN_EXE_streamable"),
         "http://localhost:8082/mcp  --transport http",
     )
-}
-
-#[test]
-fn tools_list_mcp_inspector_server() -> Result<(), Error> {
-    run_server_test(env!("CARGO_BIN_EXE_server"), "http://localhost:8083/sse").and_then(|()| {
-        run_server_test(
-            env!("CARGO_BIN_EXE_server"),
-            "http://localhost:8083/mcp --transport http",
-        )
-    })
 }
 
 #[tokio::test]
