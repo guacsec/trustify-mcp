@@ -17,7 +17,7 @@ axum = { version = "0.8", features = ["macros"] }
 chrono = "0.4"
 openid = "0.18.0"
 reqwest = { version = "0.12", features = ["json", "blocking"] }
-rmcp = { version = "0.14.0", features = ["server", "transport-io", "transport-streamable-http-server"] }
+rmcp = { version = "0.15.0", features = ["server", "transport-io", "transport-streamable-http-server"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread", "io-std", "signal"] }
@@ -33,6 +33,6 @@ urlencoding = "2.1"
 
 [dev-dependencies]
 log = "0.4"
-rmcp = { version = "0.14.0", features = ["client", "transport-child-process"] }
+rmcp = { version = "0.15.0", features = ["client", "transport-child-process"] }
 test-log = "0.2.18"
 trustify-test-context = { git = "https://github.com/guacsec/trustify.git", tag = "v0.4.5"}
