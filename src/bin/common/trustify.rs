@@ -354,17 +354,16 @@ impl Trustify {
 #[tool_handler]
 impl ServerHandler for Trustify {
     fn get_info(&self) -> ServerInfo {
-        ServerInfo {
-            protocol_version: ProtocolVersion::V_2025_03_26,
-            capabilities: ServerCapabilities::builder()
+        ServerInfo::new(
+            ServerCapabilities::builder()
                 .enable_tools()
                 .build(),
-            server_info: Implementation {
-                name: format!("{}-{}", env!("CARGO_PKG_NAME"), env!("CARGO_CRATE_NAME")).to_owned(),
-                version: env!("CARGO_PKG_VERSION").to_owned(),
-                ..Default::default()
-            },
-            instructions: Some("This server provides tools for interacting with a Trustify remote instance. The tools are able to retrieve info about the Trustify instance itself, the list of the SBOMs ingested, the packages and the vulnerabilities related to each SBOM. Further it can retrieve the vulnerabilities information ingested. More information about Trustify at https://github.com/trustification/trustify".to_string()),
-        }
+        )
+        .with_protocol_version(ProtocolVersion::V_2025_03_26)
+        .with_server_info(Implementation::new(
+            format!("{}-{}", env!("CARGO_PKG_NAME"), env!("CARGO_CRATE_NAME")),
+            env!("CARGO_PKG_VERSION"),
+        ))
+        .with_instructions("This server provides tools for interacting with a Trustify remote instance. The tools are able to retrieve info about the Trustify instance itself, the list of the SBOMs ingested, the packages and the vulnerabilities related to each SBOM. Further it can retrieve the vulnerabilities information ingested. More information about Trustify at https://github.com/trustification/trustify")
     }
 }
