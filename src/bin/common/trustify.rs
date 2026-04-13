@@ -6,7 +6,6 @@ use crate::common::trustify_requests::{
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use rmcp::{
     ErrorData, ServerHandler,
-    handler::server::tool::ToolRouter,
     handler::server::wrapper::Parameters,
     model::{
         CallToolResult, Content, Implementation, ProtocolVersion, ServerCapabilities, ServerInfo,
@@ -22,7 +21,6 @@ use trustify_module_fundamental::vulnerability::model::VulnerabilityDetails;
 
 #[derive(Clone)]
 pub struct Trustify {
-    tool_router: ToolRouter<Self>,
     http_client: Client,
     api_base_url: String,
     openid_issuer_url: String,
@@ -49,7 +47,6 @@ impl Trustify {
             .expect("Failed to create HTTP client");
 
         Self {
-            tool_router: Self::tool_router(),
             http_client,
             api_base_url,
             openid_issuer_url,
