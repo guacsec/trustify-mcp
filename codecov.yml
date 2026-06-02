@@ -1,0 +1,20 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+
+flags:
+  unit-tests:
+    carryforward: true
+
+comment:
+  layout: "reach,diff,flags,files"
+  behavior: default
