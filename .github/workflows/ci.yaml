@@ -14,6 +14,8 @@ env:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Maximize build space
         run: |
@@ -34,5 +36,17 @@ jobs:
         run: cargo fmt --check
       - name: Check
         run: cargo check
-      - name: Test
-        run: cargo test -r
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+      - name: Install llvm-tools-preview
+        run: rustup component add llvm-tools-preview
+      - name: Test with coverage
+        run: cargo llvm-cov --codecov --output-path codecov.json
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          flags: unit-tests
+          files: codecov.json
+          slug: guacsec/trustify-mcp
