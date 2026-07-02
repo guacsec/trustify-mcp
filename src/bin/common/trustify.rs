@@ -8,7 +8,8 @@ use rmcp::{
     ErrorData, ServerHandler,
     handler::server::wrapper::Parameters,
     model::{
-        CallToolResult, Content, Implementation, ProtocolVersion, ServerCapabilities, ServerInfo,
+        CallToolResult, ContentBlock, Implementation, ProtocolVersion, ServerCapabilities,
+        ServerInfo,
     },
     tool, tool_handler, tool_router,
 };
@@ -219,7 +220,7 @@ impl Trustify {
             })
         }
 
-        Ok(CallToolResult::success(vec![Content::json(
+        Ok(CallToolResult::success(vec![ContentBlock::json(
             vulnerability_details,
         )?]))
 
@@ -234,7 +235,7 @@ impl Trustify {
         //     }
         //     response.insert(purl.as_str(), cves);
         // }
-        // Ok(CallToolResult::success(vec![Content::json(response)?]))
+        // Ok(CallToolResult::success(vec![ContentBlock::json(response)?]))
     }
 
     #[tool(description = "Get the details of a vulnerability from a trustify instance by CVE ID")]
@@ -280,7 +281,7 @@ impl Trustify {
         &self,
         Parameters(param): Parameters<UrlEncodeRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        Ok(CallToolResult::success(vec![Content::text(
+        Ok(CallToolResult::success(vec![ContentBlock::text(
             urlencoding::encode(param.input.as_str()),
         )]))
     }
@@ -313,7 +314,9 @@ impl Trustify {
             }
         };
 
-        Ok(CallToolResult::success(vec![Content::json(response_json)?]))
+        Ok(CallToolResult::success(vec![ContentBlock::json(
+            response_json,
+        )?]))
     }
 
     async fn post_raw<T: Serialize + ?Sized>(
