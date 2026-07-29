@@ -337,7 +337,10 @@ async fn tools_list_mcp_client() -> Result<(), Error> {
     // Initialize
     let server_info = service.peer_info();
     log::debug!("Connected to server: {server_info:#?}");
-    assert_eq!(server_info.unwrap().server_info.name, "mcp-stdio");
+    assert_eq!(
+        server_info.unwrap().server_info.as_ref().unwrap().name,
+        "mcp-stdio"
+    );
 
     // List tools
     let tools = service.list_all_tools().await?;
