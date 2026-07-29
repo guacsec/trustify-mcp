@@ -42,8 +42,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "advisory_uri"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "AdvisoryUriRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -63,8 +62,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "purls"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "VulnerabilitiesForMultiplePurlsRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -81,8 +79,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "input"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "UrlEncodeRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -99,8 +96,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "sbom_uri"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "SbomUriRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -124,8 +120,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
           "query",
           "limit"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "SbomListRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -142,8 +137,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "cve_id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "VulnerabilityDetailsRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -160,8 +154,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "sbom_uri"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "SbomUriRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -178,8 +171,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "sbom_uri"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "SbomUriRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -231,8 +223,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
           "sort_field",
           "sort_direction"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "VulnerabilitiesListRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -249,8 +240,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
         "required": [
           "package_uri_or_purl"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "PurlVulnerabilitiesRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
     {
@@ -279,8 +269,7 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
           "limit",
           "sort"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "AdvisoryListRequest"
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     }
   ]
@@ -289,17 +278,13 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
 #[test]
 fn tools_list_mcp_inspector_stdio() {
     let inspector_commmand = format!(
-        "npx @modelcontextprotocol/inspector --cli {} --method tools/list",
+        "npx @modelcontextprotocol/inspector --cli {} -e API_URL=unused -e OPENID_ISSUER_URL=unused -e OPENID_CLIENT_ID=unused -e OPENID_CLIENT_SECRET=unused --method tools/list",
         env!("CARGO_BIN_EXE_stdio")
     );
     log::debug!("inspector command: {}", inspector_commmand);
     let output = Command::new("sh")
         .arg("-c")
         .arg(inspector_commmand)
-        .env("API_URL", "")
-        .env("OPENID_ISSUER_URL", "")
-        .env("OPENID_CLIENT_ID", "")
-        .env("OPENID_CLIENT_SECRET", "")
         .output()
         .expect("failed to execute process");
 
