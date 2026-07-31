@@ -213,9 +213,7 @@ impl Trustify {
                     advisory.head.head.published = None;
                     advisory.head.head.modified = None;
                     advisory.head.head.title = None;
-                    advisory.head.severity = None;
-                    advisory.head.score = None;
-                    advisory.cvss3_scores = vec![];
+                    advisory.head.scores = vec![];
                 })
             })
         }
