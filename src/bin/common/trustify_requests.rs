@@ -50,7 +50,7 @@ pub struct VulnerabilitiesListRequest {
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct PurlVulnerabilitiesRequest {
-    #[schemars(description = "Package URI or package PURL. Values must be url-encoded")]
+    #[schemars(description = "Package URI or package PURL")]
     pub(crate) package_uri_or_purl: String,
 }
 

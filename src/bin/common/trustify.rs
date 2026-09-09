@@ -3,7 +3,7 @@ use crate::common::trustify_requests::{
     SbomListRequest, SbomUriRequest, UrlEncodeRequest, VulnerabilitiesForMultiplePurlsRequest,
     VulnerabilitiesListRequest, VulnerabilityDetailsRequest,
 };
-use reqwest::{Client, RequestBuilder, Response};
+use reqwest::{Client, RequestBuilder, Response, Url};
 use rmcp::{
     ErrorData, ServerHandler,
     handler::server::wrapper::Parameters,
@@ -94,8 +94,7 @@ impl Trustify {
 
     #[tool(description = "Call the info endpoint for a trustify instance")]
     async fn trustify_info(&self) -> Result<CallToolResult, ErrorData> {
-        // Trustify /.well-known/trustify URL
-        let url = format!("{}/.well-known/trustify", self.api_base_url);
+        let url = self.api_url(&[".well-known", "trustify"])?;
         self.get(url).await
     }
 
@@ -105,10 +104,10 @@ impl Trustify {
         Parameters(params): Parameters<SbomListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
         validate_limit(params.limit)?;
-        let url = format!(
-            "{}/api/v2/sbom?q={}&limit={}",
-            self.api_base_url, params.query, params.limit
-        );
+        let mut url = self.api_url(&["api", "v2", "sbom"])?;
+        url.query_pairs_mut()
+            .append_pair("q", &params.query)
+            .append_pair("limit", &params.limit.to_string());
         self.get(url).await
     }
 
@@ -117,7 +116,7 @@ impl Trustify {
         &self,
         Parameters(params): Parameters<SbomUriRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        let url = format!("{}/api/v2/sbom/{}", self.api_base_url, params.sbom_uri);
+        let url = self.api_url(&["api", "v2", "sbom", &params.sbom_uri])?;
         self.get(url).await
     }
 
@@ -128,13 +127,10 @@ impl Trustify {
         Parameters(sbom_list_packages_params): Parameters<SbomListPackagesRequest>,
     ) -> Result<CallToolResult, ErrorData> {
         validate_limit(sbom_list_packages_params.limit)?;
-        let url = format!(
-            "{}/api/v2/sbom/{}/packages?q={}&limit={}",
-            self.api_base_url,
-            sbom_uri_param.sbom_uri,
-            sbom_list_packages_params.query,
-            sbom_list_packages_params.limit
-        );
+        let mut url = self.api_url(&["api", "v2", "sbom", &sbom_uri_param.sbom_uri, "packages"])?;
+        url.query_pairs_mut()
+            .append_pair("q", &sbom_list_packages_params.query)
+            .append_pair("limit", &sbom_list_packages_params.limit.to_string());
         self.get(url).await
     }
 
@@ -145,10 +141,10 @@ impl Trustify {
         &self,
         Parameters(param): Parameters<SbomUriRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        let url = format!(
-            "{}/api/v2/sbom/{}/advisory?limit={}&offset=0",
-            self.api_base_url, param.sbom_uri, MAX_PAGE_SIZE
-        );
+        let mut url = self.api_url(&["api", "v2", "sbom", &param.sbom_uri, "advisory"])?;
+        url.query_pairs_mut()
+            .append_pair("limit", &MAX_PAGE_SIZE.to_string())
+            .append_pair("offset", "0");
         self.get(url).await
     }
 
@@ -159,10 +155,7 @@ impl Trustify {
         &self,
         Parameters(param): Parameters<PurlVulnerabilitiesRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        let url = format!(
-            "{}/api/v2/purl/{}",
-            self.api_base_url, param.package_uri_or_purl
-        );
+        let url = self.api_url(&["api", "v2", "purl", &param.package_uri_or_purl])?;
         self.get(url).await
     }
 
@@ -174,16 +167,17 @@ impl Trustify {
         Parameters(params): Parameters<VulnerabilitiesListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
         validate_limit(params.limit)?;
-        let url = format!(
-            "{}/api/v2/vulnerability?limit={}&offset=0&q={}%26published>{}%26published<{}&sort={}:{}",
-            self.api_base_url,
-            params.limit,
-            params.query,
-            params.published_after,
-            params.published_before,
-            params.sort_field,
-            params.sort_direction
+        let mut url = self.api_url(&["api", "v2", "vulnerability"])?;
+        let query = format!(
+            "{}&published>{}&published<{}",
+            params.query, params.published_after, params.published_before
         );
+        let sort = format!("{}:{}", params.sort_field, params.sort_direction);
+        url.query_pairs_mut()
+            .append_pair("limit", &params.limit.to_string())
+            .append_pair("offset", "0")
+            .append_pair("q", &query)
+            .append_pair("sort", &sort);
         self.get(url).await
     }
 
@@ -201,7 +195,7 @@ impl Trustify {
 
         let response = self
             .post_raw(
-                format!("{}/api/v2/vulnerability/analyze", self.api_base_url),
+                self.api_url(&["api", "v2", "vulnerability", "analyze"])?,
                 &purl_data,
             )
             .await?;
@@ -258,11 +252,8 @@ impl Trustify {
         &self,
         Parameters(param): Parameters<VulnerabilityDetailsRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        self.get(format!(
-            "{}/api/v2/vulnerability/{}",
-            self.api_base_url, param.cve_id
-        ))
-        .await
+        self.get(self.api_url(&["api", "v2", "vulnerability", &param.cve_id])?)
+            .await
     }
 
     #[tool(
@@ -273,10 +264,12 @@ impl Trustify {
         Parameters(params): Parameters<AdvisoryListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
         validate_limit(params.limit)?;
-        let url = format!(
-            "{}/api/v2/advisory?limit={}&offset=0&q={}&sort={}",
-            self.api_base_url, params.limit, params.query, params.sort
-        );
+        let mut url = self.api_url(&["api", "v2", "advisory"])?;
+        url.query_pairs_mut()
+            .append_pair("limit", &params.limit.to_string())
+            .append_pair("offset", "0")
+            .append_pair("q", &params.query)
+            .append_pair("sort", &params.sort);
         self.get(url).await
     }
 
@@ -285,10 +278,7 @@ impl Trustify {
         &self,
         Parameters(params): Parameters<AdvisoryUriRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        let url = format!(
-            "{}/api/v2/advisory/{}",
-            self.api_base_url, params.advisory_uri
-        );
+        let url = self.api_url(&["api", "v2", "advisory", &params.advisory_uri])?;
         self.get(url).await
     }
 
@@ -302,14 +292,18 @@ impl Trustify {
         )]))
     }
 
-    async fn get(&self, url: String) -> Result<CallToolResult, ErrorData> {
+    fn api_url(&self, path_segments: &[&str]) -> Result<Url, ErrorData> {
+        build_api_url(&self.api_base_url, path_segments)
+    }
+
+    async fn get(&self, url: Url) -> Result<CallToolResult, ErrorData> {
         self.call(self.http_client.get(url)).await
     }
 
     #[allow(dead_code)]
     async fn post<T: Serialize + ?Sized>(
         &self,
-        url: String,
+        url: Url,
         json: &T,
     ) -> Result<CallToolResult, ErrorData> {
         self.call(self.http_client.post(url).json(json)).await
@@ -337,7 +331,7 @@ impl Trustify {
 
     async fn post_raw<T: Serialize + ?Sized>(
         &self,
-        url: String,
+        url: Url,
         json: &T,
     ) -> Result<Response, ErrorData> {
         let body = serialize_json_body(json)?;
@@ -376,6 +370,21 @@ impl Trustify {
 
         Ok(response)
     }
+}
+
+fn build_api_url(base_url: &str, path_segments: &[&str]) -> Result<Url, ErrorData> {
+    let mut url = Url::parse(base_url).map_err(|error| {
+        ErrorData::internal_error(format!("Invalid Trustify API URL: {error}"), None)
+    })?;
+    url.set_query(None);
+    url.set_fragment(None);
+    {
+        let mut path = url.path_segments_mut().map_err(|_| {
+            ErrorData::internal_error("Trustify API URL cannot be used as a base URL", None)
+        })?;
+        path.extend(path_segments.iter().copied());
+    }
+    Ok(url)
 }
 
 fn validate_limit(limit: usize) -> Result<(), ErrorData> {
@@ -485,11 +494,40 @@ impl ServerHandler for Trustify {
 mod tests {
     use super::{
         MAX_PAGE_SIZE, MAX_PURL_COUNT, MAX_PURL_LENGTH, MAX_REQUEST_BYTES, MAX_RESPONSE_BYTES,
-        Trustify, read_response_body, serialize_json_body, validate_limit, validate_purls,
+        Trustify, build_api_url, read_response_body, serialize_json_body, validate_limit,
+        validate_purls,
     };
     use axum::{Router, body::Body, routing::get};
     use std::sync::Arc;
     use tokio::sync::Barrier;
+
+    #[test]
+    fn url_values_are_encoded_as_path_segments_and_query_pairs() {
+        let purl = "pkg:maven/org.example/foo@1.0?classifier=sources&scope=runtime#metadata";
+        let mut url = build_api_url(
+            "https://example.test/trustify?old=value#fragment",
+            &["api", "v2", "purl", purl],
+        )
+        .unwrap();
+        url.query_pairs_mut()
+            .append_pair("q", "title=a&b#c=d?e")
+            .append_pair("sort", "published:desc");
+
+        assert!(url.path().contains("pkg:maven%2Forg.example%2Ffoo@1.0"));
+        assert!(
+            url.path()
+                .contains("%3Fclassifier=sources&scope=runtime%23metadata")
+        );
+        assert_eq!(
+            url.query_pairs().find(|(key, _)| key == "q").unwrap().1,
+            "title=a&b#c=d?e"
+        );
+        assert_eq!(
+            url.query_pairs().find(|(key, _)| key == "sort").unwrap().1,
+            "published:desc"
+        );
+        assert!(url.fragment().is_none());
+    }
 
     #[test]
     fn request_limits_reject_oversized_inputs() {
