@@ -8,7 +8,7 @@ use axum::{
     middleware::Next,
     response::Response,
 };
-use std::{env, str::FromStr, sync::Arc};
+use std::{env, sync::Arc};
 use trustify_auth::{
     auth::AuthConfigArguments,
     authenticator::{Authenticator, config::SingleAuthenticatorClientConfig},
@@ -22,13 +22,17 @@ struct AppState {
 }
 
 pub async fn protect_router(router: Router) -> Result<Router> {
+    if is_auth_disabled() {
+        return Ok(router);
+    }
+
     let auth_devmode = false;
     let openid_issuer_url =
         env::var("OPENID_ISSUER_URL").expect("Missing the OPENID_ISSUER_URL environment variable.");
     let open_client_id =
         env::var("OPENID_CLIENT_ID").expect("Missing the OPENID_CLIENT_ID environment variable.");
     let auth = AuthConfigArguments {
-        disabled: is_auth_disabled(),
+        disabled: false,
         config: None,
         clients: SingleAuthenticatorClientConfig {
             client_ids: vec![open_client_id],
@@ -62,12 +66,15 @@ pub async fn protect_router(router: Router) -> Result<Router> {
 }
 
 fn is_auth_disabled() -> bool {
-    let auth_disabled =
-        bool::from_str(&env::var("AUTH_DISABLED").unwrap_or(false.to_string())).unwrap_or(false);
+    let auth_disabled = parse_auth_disabled(env::var("AUTH_DISABLED").ok().as_deref());
     if auth_disabled {
         tracing::warn!("Auth disabled");
     }
     auth_disabled
+}
+
+fn parse_auth_disabled(value: Option<&str>) -> bool {
+    value.is_some_and(|value| value.eq_ignore_ascii_case("true"))
 }
 
 async fn authenticate(
@@ -98,5 +105,58 @@ async fn authenticate(
         // but the state.authenticator is now None, then the request is unauthorized
         // because it's an unexpected situation so better keep safety first
         None => Err(StatusCode::UNAUTHORIZED),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{parse_auth_disabled, protect_router};
+    use axum::Router;
+    use std::{env, sync::LazyLock};
+    use tokio::sync::Mutex;
+
+    static ENV_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
+
+    #[test]
+    fn auth_disabled_requires_true_value() {
+        assert!(parse_auth_disabled(Some("true")));
+        assert!(parse_auth_disabled(Some("TRUE")));
+        assert!(!parse_auth_disabled(Some("false")));
+        assert!(!parse_auth_disabled(Some("invalid")));
+        assert!(!parse_auth_disabled(None));
+    }
+
+    #[tokio::test]
+    async fn disabled_auth_does_not_require_oidc_configuration() {
+        let _lock = ENV_LOCK.lock().await;
+        let variables = [
+            "AUTH_DISABLED",
+            "OPENID_ISSUER_URL",
+            "OPENID_CLIENT_ID",
+            "OPENID_CLIENT_SECRET",
+        ];
+        let previous = variables
+            .iter()
+            .map(|name| (*name, env::var_os(name)))
+            .collect::<Vec<_>>();
+
+        unsafe {
+            env::set_var("AUTH_DISABLED", "true");
+            env::remove_var("OPENID_ISSUER_URL");
+            env::remove_var("OPENID_CLIENT_ID");
+            env::remove_var("OPENID_CLIENT_SECRET");
+        }
+        let result = protect_router(Router::new()).await;
+
+        unsafe {
+            for (name, value) in previous {
+                match value {
+                    Some(value) => env::set_var(name, value),
+                    None => env::remove_var(name),
+                }
+            }
+        }
+
+        assert!(result.is_ok());
     }
 }
