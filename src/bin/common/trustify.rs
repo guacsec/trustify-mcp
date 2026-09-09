@@ -3,7 +3,7 @@ use crate::common::trustify_requests::{
     SbomListRequest, SbomUriRequest, UrlEncodeRequest, VulnerabilitiesForMultiplePurlsRequest,
     VulnerabilitiesListRequest, VulnerabilityDetailsRequest,
 };
-use reqwest::blocking::{Client, RequestBuilder, Response};
+use reqwest::{Client, RequestBuilder, Response};
 use rmcp::{
     ErrorData, ServerHandler,
     handler::server::wrapper::Parameters,
@@ -191,7 +191,7 @@ impl Trustify {
 
         // Parse the response
         let mut vulnerability_details: HashMap<String, Vec<VulnerabilityDetails>> =
-            match response.json() {
+            match response.json().await {
                 Ok(response_json) => response_json,
                 Err(error) => {
                     return Err(ErrorData::internal_error(
@@ -302,7 +302,7 @@ impl Trustify {
         let response = self.call_raw(request_builder).await?;
 
         // Parse the response
-        let response_json: Value = match response.json() {
+        let response_json: Value = match response.json().await {
             Ok(response_json) => response_json,
             Err(error) => {
                 return Err(ErrorData::internal_error(
@@ -326,8 +326,11 @@ impl Trustify {
     }
 
     async fn call_raw(&self, request_builder: RequestBuilder) -> Result<Response, ErrorData> {
-        // Send the request
-        let response = match request_builder.bearer_auth(self.get_bearer().await).send() {
+        Self::send(request_builder.bearer_auth(self.get_bearer().await)).await
+    }
+
+    async fn send(request_builder: RequestBuilder) -> Result<Response, ErrorData> {
+        let response = match request_builder.send().await {
             Ok(response) => response,
             Err(error) => {
                 return Err(ErrorData::internal_error(
@@ -346,6 +349,51 @@ impl Trustify {
         }
 
         Ok(response)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Trustify;
+    use axum::{Router, routing::get};
+    use std::sync::Arc;
+    use tokio::sync::Barrier;
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn concurrent_requests_do_not_block_the_runtime() {
+        let barrier = Arc::new(Barrier::new(2));
+        let app = Router::new().route(
+            "/",
+            get({
+                let barrier = Arc::clone(&barrier);
+                move || {
+                    let barrier = Arc::clone(&barrier);
+                    async move {
+                        barrier.wait().await;
+                        "ok"
+                    }
+                }
+            }),
+        );
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(axum::serve(listener, app).into_future());
+        let first_client = reqwest::Client::new();
+        let second_client = reqwest::Client::new();
+        let url = format!("http://{address}/");
+
+        let (first, second) = tokio::time::timeout(std::time::Duration::from_secs(1), async {
+            tokio::join!(
+                Trustify::send(first_client.get(&url)),
+                Trustify::send(second_client.get(&url)),
+            )
+        })
+        .await
+        .expect("concurrent requests should complete");
+
+        assert_eq!(first.unwrap().text().await.unwrap(), "ok");
+        assert_eq!(second.unwrap().text().await.unwrap(), "ok");
+        server.abort();
     }
 }
 
