@@ -1,10 +1,10 @@
 use anyhow::Error;
 use rmcp::{ServiceExt, transport::TokioChildProcess};
 use serde_json::Value;
-use std::thread::sleep;
 use std::time::Duration;
 use std::{env, process::Command};
 use test_log::test;
+use tokio::time::sleep;
 use trustify_test_context::subset::ContainsSubset;
 
 const DEFAULT_READINESS_MAX_ATTEMPTS: u32 = 10;
@@ -85,17 +85,29 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
     {
       "name": "trustify_sbom_details",
       "description": "Get the details of a SBOM from a trustify instance by SBOM URI",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "sbom_uri": {
-            "description": "Sbom URI",
-            "type": "string"
-          }
-        },
-        "required": [
-          "sbom_uri"
-        ],
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "sbom_uri": {
+              "description": "Sbom URI",
+              "type": "string"
+            },
+            "query": {
+              "description": "Search query for packages within the SBOM",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Maximum number of packages to return",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "sbom_uri",
+            "query",
+            "limit"
+          ],
         "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },
@@ -300,12 +312,13 @@ fn tools_list_mcp_inspector_stdio() {
     assert!(expected_result.contains_subset(result));
 }
 
-#[test]
-fn tools_list_mcp_inspector_streamable_http() -> Result<(), Error> {
+#[tokio::test]
+async fn tools_list_mcp_inspector_streamable_http() -> Result<(), Error> {
     run_server_test(
         env!("CARGO_BIN_EXE_streamable"),
         "http://localhost:8082/mcp  --transport http",
     )
+    .await
 }
 
 #[tokio::test]
@@ -335,7 +348,7 @@ async fn tools_list_mcp_client() -> Result<(), Error> {
     Ok(())
 }
 
-fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Result<(), Error> {
+async fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Result<(), Error> {
     let mut server = Command::new("sh")
         .arg("-c")
         .arg(server_command)
@@ -350,6 +363,7 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
     let mut last_err: Option<reqwest::Error> = None;
     let max_attempts = readiness_max_attempts();
     let interval = readiness_interval();
+    let client = reqwest::Client::new();
 
     for attempt in 1..=max_attempts {
         log::debug!(
@@ -357,7 +371,7 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
             interval
         );
 
-        match reqwest::blocking::get(inspector_cli_parameter) {
+        match client.get(inspector_cli_parameter).send().await {
             Ok(_) => {
                 is_ready = true;
                 last_err = None;
@@ -368,7 +382,7 @@ fn run_server_test(server_command: &str, inspector_cli_parameter: &str) -> Resul
             }
         }
 
-        sleep(interval);
+        sleep(interval).await;
     }
 
     assert!(

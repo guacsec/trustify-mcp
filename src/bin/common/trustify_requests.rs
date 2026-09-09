@@ -16,8 +16,8 @@ pub struct SbomUriRequest {
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct SbomListPackagesRequest {
-    // #[schemars(description = "Sbom URI")]
-    // sbom_uri: String,
+    #[schemars(description = "Sbom URI")]
+    pub(crate) sbom_uri: String,
     #[schemars(description = "Search query for packages within the SBOM")]
     pub(crate) query: String,
     #[schemars(description = "Maximum number of packages to return")]
@@ -50,7 +50,7 @@ pub struct VulnerabilitiesListRequest {
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct PurlVulnerabilitiesRequest {
-    #[schemars(description = "Package URI or package PURL. Values must be url-encoded")]
+    #[schemars(description = "Package URI or package PURL")]
     pub(crate) package_uri_or_purl: String,
 }
 
