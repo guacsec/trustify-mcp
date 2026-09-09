@@ -16,8 +16,8 @@ pub struct SbomUriRequest {
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct SbomListPackagesRequest {
-    // #[schemars(description = "Sbom URI")]
-    // sbom_uri: String,
+    #[schemars(description = "Sbom URI")]
+    pub(crate) sbom_uri: String,
     #[schemars(description = "Search query for packages within the SBOM")]
     pub(crate) query: String,
     #[schemars(description = "Maximum number of packages to return")]

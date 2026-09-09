@@ -85,17 +85,29 @@ const EXPECTED_TOOLS_LIST_RESPONSE: &str = r#"{
     {
       "name": "trustify_sbom_details",
       "description": "Get the details of a SBOM from a trustify instance by SBOM URI",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "sbom_uri": {
-            "description": "Sbom URI",
-            "type": "string"
-          }
-        },
-        "required": [
-          "sbom_uri"
-        ],
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "sbom_uri": {
+              "description": "Sbom URI",
+              "type": "string"
+            },
+            "query": {
+              "description": "Search query for packages within the SBOM",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Maximum number of packages to return",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "sbom_uri",
+            "query",
+            "limit"
+          ],
         "$schema": "https://json-schema.org/draft/2020-12/schema"
       }
     },

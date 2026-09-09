@@ -123,14 +123,13 @@ impl Trustify {
     #[tool(description = "Get a list of packages contained in an sboms from a trustify instance")]
     async fn trustify_sbom_list_packages(
         &self,
-        Parameters(sbom_uri_param): Parameters<SbomUriRequest>,
-        Parameters(sbom_list_packages_params): Parameters<SbomListPackagesRequest>,
+        Parameters(params): Parameters<SbomListPackagesRequest>,
     ) -> Result<CallToolResult, ErrorData> {
-        validate_limit(sbom_list_packages_params.limit)?;
-        let mut url = self.api_url(&["api", "v2", "sbom", &sbom_uri_param.sbom_uri, "packages"])?;
+        validate_limit(params.limit)?;
+        let mut url = self.api_url(&["api", "v2", "sbom", &params.sbom_uri, "packages"])?;
         url.query_pairs_mut()
-            .append_pair("q", &sbom_list_packages_params.query)
-            .append_pair("limit", &sbom_list_packages_params.limit.to_string());
+            .append_pair("q", &params.query)
+            .append_pair("limit", &params.limit.to_string());
         self.get(url).await
     }
 
