@@ -14,11 +14,21 @@ use rmcp::{
     tool, tool_handler, tool_router,
 };
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use serde_json::Value;
+use std::time::Duration;
 use std::{collections::HashMap, env};
 use tokio::sync::OnceCell;
 use trustify_auth::client::OpenIdTokenProvider;
 use trustify_module_fundamental::vulnerability::model::VulnerabilityDetails;
+
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
+const MAX_RESPONSE_BYTES: usize = 16 * 1024 * 1024;
+const MAX_REQUEST_BYTES: usize = 1024 * 1024;
+const MAX_PAGE_SIZE: usize = 1_000;
+const MAX_PURL_COUNT: usize = 100;
+const MAX_PURL_LENGTH: usize = 4_096;
 
 #[derive(Clone)]
 pub struct Trustify {
@@ -44,6 +54,8 @@ impl Trustify {
         // Initialize HTTP client
         let http_client = Client::builder()
             .user_agent("trustify-tools-server")
+            .connect_timeout(CONNECT_TIMEOUT)
+            .timeout(REQUEST_TIMEOUT)
             .build()
             .expect("Failed to create HTTP client");
 
@@ -92,6 +104,7 @@ impl Trustify {
         &self,
         Parameters(params): Parameters<SbomListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
+        validate_limit(params.limit)?;
         let url = format!(
             "{}/api/v2/sbom?q={}&limit={}",
             self.api_base_url, params.query, params.limit
@@ -114,6 +127,7 @@ impl Trustify {
         Parameters(sbom_uri_param): Parameters<SbomUriRequest>,
         Parameters(sbom_list_packages_params): Parameters<SbomListPackagesRequest>,
     ) -> Result<CallToolResult, ErrorData> {
+        validate_limit(sbom_list_packages_params.limit)?;
         let url = format!(
             "{}/api/v2/sbom/{}/packages?q={}&limit={}",
             self.api_base_url,
@@ -132,8 +146,8 @@ impl Trustify {
         Parameters(param): Parameters<SbomUriRequest>,
     ) -> Result<CallToolResult, ErrorData> {
         let url = format!(
-            "{}/api/v2/sbom/{}/advisory",
-            self.api_base_url, param.sbom_uri
+            "{}/api/v2/sbom/{}/advisory?limit={}&offset=0",
+            self.api_base_url, param.sbom_uri, MAX_PAGE_SIZE
         );
         self.get(url).await
     }
@@ -159,6 +173,7 @@ impl Trustify {
         &self,
         Parameters(params): Parameters<VulnerabilitiesListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
+        validate_limit(params.limit)?;
         let url = format!(
             "{}/api/v2/vulnerability?limit={}&offset=0&q={}%26published>{}%26published<{}&sort={}:{}",
             self.api_base_url,
@@ -179,6 +194,8 @@ impl Trustify {
         &self,
         Parameters(param): Parameters<VulnerabilitiesForMultiplePurlsRequest>,
     ) -> Result<CallToolResult, ErrorData> {
+        validate_purls(&param.purls)?;
+
         let mut purl_data = HashMap::new();
         purl_data.insert("purls", param.purls);
 
@@ -191,7 +208,7 @@ impl Trustify {
 
         // Parse the response
         let mut vulnerability_details: HashMap<String, Vec<VulnerabilityDetails>> =
-            match response.json().await {
+            match deserialize_response(response).await {
                 Ok(response_json) => response_json,
                 Err(error) => {
                     return Err(ErrorData::internal_error(
@@ -202,7 +219,7 @@ impl Trustify {
             };
 
         // Response "slimming" by removing some data
-        for (_purl, vulnerabilities) in vulnerability_details.iter_mut() {
+        for vulnerabilities in vulnerability_details.values_mut() {
             vulnerabilities.iter_mut().for_each(|vulnerability| {
                 vulnerability.head.description = None;
                 vulnerability.head.reserved = None;
@@ -255,6 +272,7 @@ impl Trustify {
         &self,
         Parameters(params): Parameters<AdvisoryListRequest>,
     ) -> Result<CallToolResult, ErrorData> {
+        validate_limit(params.limit)?;
         let url = format!(
             "{}/api/v2/advisory?limit={}&offset=0&q={}&sort={}",
             self.api_base_url, params.limit, params.query, params.sort
@@ -302,7 +320,7 @@ impl Trustify {
         let response = self.call_raw(request_builder).await?;
 
         // Parse the response
-        let response_json: Value = match response.json().await {
+        let response_json: Value = match deserialize_response(response).await {
             Ok(response_json) => response_json,
             Err(error) => {
                 return Err(ErrorData::internal_error(
@@ -322,7 +340,15 @@ impl Trustify {
         url: String,
         json: &T,
     ) -> Result<Response, ErrorData> {
-        self.call_raw(self.http_client.post(url).json(json)).await
+        let body = serialize_json_body(json)?;
+
+        self.call_raw(
+            self.http_client
+                .post(url)
+                .header(reqwest::header::CONTENT_TYPE, "application/json")
+                .body(body),
+        )
+        .await
     }
 
     async fn call_raw(&self, request_builder: RequestBuilder) -> Result<Response, ErrorData> {
@@ -352,12 +378,145 @@ impl Trustify {
     }
 }
 
+fn validate_limit(limit: usize) -> Result<(), ErrorData> {
+    if limit > MAX_PAGE_SIZE {
+        return Err(ErrorData::invalid_params(
+            format!("The maximum page size is {MAX_PAGE_SIZE}"),
+            None,
+        ));
+    }
+
+    Ok(())
+}
+
+fn validate_purls(purls: &[String]) -> Result<(), ErrorData> {
+    if purls.len() > MAX_PURL_COUNT {
+        return Err(ErrorData::invalid_params(
+            format!("A maximum of {MAX_PURL_COUNT} PURLs may be requested"),
+            None,
+        ));
+    }
+    if let Some(index) = purls
+        .iter()
+        .enumerate()
+        .find_map(|(index, purl)| (purl.len() > MAX_PURL_LENGTH).then_some(index))
+    {
+        return Err(ErrorData::invalid_params(
+            format!("PURL at index {index} exceeds the maximum length of {MAX_PURL_LENGTH} bytes"),
+            None,
+        ));
+    }
+
+    Ok(())
+}
+
+fn serialize_json_body<T: Serialize + ?Sized>(json: &T) -> Result<Vec<u8>, ErrorData> {
+    let body = serde_json::to_vec(json).map_err(|error| {
+        ErrorData::internal_error(
+            format!("Failed to serialize Trustify API request: {error}"),
+            None,
+        )
+    })?;
+    if body.len() > MAX_REQUEST_BYTES {
+        return Err(ErrorData::invalid_params(
+            format!("Trustify API request exceeds the {MAX_REQUEST_BYTES}-byte limit"),
+            None,
+        ));
+    }
+
+    Ok(body)
+}
+
+async fn deserialize_response<T: DeserializeOwned>(response: Response) -> Result<T, ErrorData> {
+    let body = read_response_body(response).await?;
+    serde_json::from_slice(&body).map_err(|error| {
+        ErrorData::internal_error(format!("Trustify API JSON error: {error}"), None)
+    })
+}
+
+async fn read_response_body(mut response: Response) -> Result<Vec<u8>, ErrorData> {
+    if response
+        .content_length()
+        .is_some_and(|length| length > MAX_RESPONSE_BYTES as u64)
+    {
+        return Err(ErrorData::internal_error(
+            format!("Trustify API response exceeds the {MAX_RESPONSE_BYTES}-byte limit"),
+            None,
+        ));
+    }
+
+    let mut body = Vec::new();
+    while let Some(chunk) = response.chunk().await.map_err(|error| {
+        ErrorData::internal_error(
+            format!("Failed to read Trustify API response: {error}"),
+            None,
+        )
+    })? {
+        if body.len().saturating_add(chunk.len()) > MAX_RESPONSE_BYTES {
+            return Err(ErrorData::internal_error(
+                format!("Trustify API response exceeds the {MAX_RESPONSE_BYTES}-byte limit"),
+                None,
+            ));
+        }
+        body.extend_from_slice(&chunk);
+    }
+
+    Ok(body)
+}
+
+#[tool_handler]
+impl ServerHandler for Trustify {
+    fn get_info(&self) -> ServerInfo {
+        ServerInfo::new(
+            ServerCapabilities::builder()
+                .enable_tools()
+                .build(),
+        )
+        .with_protocol_version(ProtocolVersion::V_2025_03_26)
+        .with_server_info(Implementation::new(
+            format!("{}-{}", env!("CARGO_PKG_NAME"), env!("CARGO_CRATE_NAME")),
+            env!("CARGO_PKG_VERSION"),
+        ))
+        .with_instructions("This server provides tools for interacting with a Trustify remote instance. The tools are able to retrieve info about the Trustify instance itself, the list of the SBOMs ingested, the packages and the vulnerabilities related to each SBOM. Further it can retrieve the vulnerabilities information ingested. More information about Trustify at https://github.com/trustification/trustify")
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::Trustify;
-    use axum::{Router, routing::get};
+    use super::{
+        MAX_PAGE_SIZE, MAX_PURL_COUNT, MAX_PURL_LENGTH, MAX_REQUEST_BYTES, MAX_RESPONSE_BYTES,
+        Trustify, read_response_body, serialize_json_body, validate_limit, validate_purls,
+    };
+    use axum::{Router, body::Body, routing::get};
     use std::sync::Arc;
     use tokio::sync::Barrier;
+
+    #[test]
+    fn request_limits_reject_oversized_inputs() {
+        assert!(validate_limit(MAX_PAGE_SIZE + 1).is_err());
+        assert!(validate_purls(&vec![String::from("pkg:test/a@1"); MAX_PURL_COUNT + 1]).is_err());
+        assert!(validate_purls(&["x".repeat(MAX_PURL_LENGTH + 1)]).is_err());
+        assert!(serialize_json_body(&"x".repeat(MAX_REQUEST_BYTES)).is_err());
+    }
+
+    #[tokio::test]
+    async fn oversized_responses_are_rejected_before_reading_the_body() {
+        let app = Router::new().route(
+            "/",
+            get(|| async { Body::from(vec![b'x'; MAX_RESPONSE_BYTES + 1]) }),
+        );
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(axum::serve(listener, app).into_future());
+        let response = reqwest::Client::new()
+            .get(format!("http://{address}/"))
+            .send()
+            .await
+            .unwrap();
+
+        assert!(read_response_body(response).await.is_err());
+        server.abort();
+    }
 
     #[tokio::test(flavor = "current_thread")]
     async fn concurrent_requests_do_not_block_the_runtime() {
@@ -394,22 +553,5 @@ mod tests {
         assert_eq!(first.unwrap().text().await.unwrap(), "ok");
         assert_eq!(second.unwrap().text().await.unwrap(), "ok");
         server.abort();
-    }
-}
-
-#[tool_handler]
-impl ServerHandler for Trustify {
-    fn get_info(&self) -> ServerInfo {
-        ServerInfo::new(
-            ServerCapabilities::builder()
-                .enable_tools()
-                .build(),
-        )
-        .with_protocol_version(ProtocolVersion::V_2025_03_26)
-        .with_server_info(Implementation::new(
-            format!("{}-{}", env!("CARGO_PKG_NAME"), env!("CARGO_CRATE_NAME")),
-            env!("CARGO_PKG_VERSION"),
-        ))
-        .with_instructions("This server provides tools for interacting with a Trustify remote instance. The tools are able to retrieve info about the Trustify instance itself, the list of the SBOMs ingested, the packages and the vulnerabilities related to each SBOM. Further it can retrieve the vulnerabilities information ingested. More information about Trustify at https://github.com/trustification/trustify")
     }
 }
