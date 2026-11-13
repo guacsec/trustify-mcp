@@ -1,3 +1,10 @@
 [env]
 # added to have 'trustify_test_context' from trustify project to build fine
 CARGO_WORKSPACE_ROOT = { value = "", relative = true }
+
+[profile.release]
+# Work around an Apple ld bug (macOS 27 / ld-27106 with rustc 1.97): stripping
+# the release sqlx_macros proc-macro dylib produces a Mach-O export-trie string
+# pool that dyld rejects ("mis-aligned LINKEDIT string pool"). Keeping symbols
+# avoids the broken strip path; debuginfo is still absent (debug = false).
+strip = "none"
