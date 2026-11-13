@@ -67,7 +67,7 @@ impl Trustify {
         .await
         .unwrap();
 
-        OpenIdTokenProvider::new(client, chrono::Duration::seconds(240))
+        OpenIdTokenProvider::new(client, chrono::Duration::seconds(240), None)
     }
 
     async fn get_bearer(&self) -> String {
